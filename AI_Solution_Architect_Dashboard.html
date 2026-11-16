@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>AI Solution Architect's Complete Ready Reckoner (2026)</title>
+  <style>
+    :root {
+      --bg-light: #f8fafc;
+      --bg-dark: #0b1120;
+      --card-light: #ffffff;
+      --card-dark: #111827;
+      --surface-light: #f1f5f9;
+      --surface-dark: #1e293b;
+      --border-light: #cbd5e1;
+      --border-dark: #334155;
+      --text-light: #0f172a;
+      --text-dark: #f8fafc;
+      --muted-light: #475569;
+      --muted-dark: #94a3b8;
+      --brand-light: #2563eb;
+      --brand-dark: #60a5fa;
+      --brand-fg-light: #ffffff;
+      --brand-fg-dark: #091526;
+      --ok-light: #15803d;
+      --ok-dark: #4ade80;
+      --warn-light: #b45309;
+      --warn-dark: #fbbf24;
+
+      --bg: var(--bg-light);
+      --card: var(--card-light);
+      --surface: var(--surface-light);
+      --border: var(--border-light);
+      --text: var(--text-light);
+      --muted: var(--muted-light);
+      --brand: var(--brand-light);
+      --brand-fg: var(--brand-fg-light);
+      --ok: var(--ok-light);
+      --warn: var(--warn-light);
+
+      @media (prefers-color-scheme: dark) {
+        --bg: var(--bg-dark);
+        --card: var(--card-dark);
+        --surface: var(--surface-dark);
+        --border: var(--border-dark);
+        --text: var(--text-dark);
+        --muted: var(--muted-dark);
+        --brand: var(--brand-dark);
+        --brand-fg: var(--brand-fg-dark);
+        --ok: var(--ok-dark);
+        --warn: var(--warn-dark);
+      }
+
+      @supports (color: light-dark(white, black)) {
+        --bg: light-dark(var(--bg-light), var(--bg-dark));
+        --card: light-dark(var(--card-light), var(--card-dark));
+        --surface: light-dark(var(--surface-light), var(--surface-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --text: light-dark(var(--text-light), var(--text-dark));
+        --muted: light-dark(var(--muted-light), var(--muted-dark));
+        --brand: light-dark(var(--brand-light), var(--brand-dark));
+        --brand-fg: light-dark(var(--brand-fg-light), var(--brand-fg-dark));
+        --ok: light-dark(var(--ok-light), var(--ok-dark));
+        --warn: light-dark(var(--warn-light), var(--warn-dark));
+      }
+
+      color-scheme: light dark;
+      accent-color: var(--brand);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 1.25rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .shell { max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.15rem; }
+    .header-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+    .eyebrow { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 6px; background: var(--brand); color: var(--brand-fg); }
+    h1 { margin: 0.35rem 0 0.2rem; font-size: 1.5rem; }
+    .sub { margin: 0; font-size: 0.875rem; color: var(--muted); }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(90px, 1fr)); gap: 0.5rem; text-align: center; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem; }
+    .stat-num { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .stat-lbl { font-size: 0.75rem; color: var(--muted); }
+
+    .nav-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border); }
+    .tabs, .pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    button {
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 0.45rem 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    button.active, button.primary-btn { background: var(--brand); color: var(--brand-fg); border-color: transparent; }
+    button.link-btn { background: transparent; border: none; color: var(--brand); text-decoration: underline; padding: 0.25rem 0.4rem; }
+    .pill { border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+
+    .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
+    label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 0.25rem; }
+    input[type="search"], select {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      font: inherit;
+      font-size: 0.875rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 1rem; }
+    .card-region {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 330px auto 250px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.85rem;
+    }
+    @supports not (content-visibility: auto) {
+      .card-region { contain: layout style paint; }
+    }
+    .card-meta { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.75rem; color: var(--muted); }
+    .badge { padding: 0.15rem 0.45rem; border-radius: 5px; background: var(--surface); border: 1px solid var(--border); font-size: 0.75rem; color: var(--text); }
+    .card-title { margin: 0.35rem 0; font-size: 1.05rem; }
+    .card-desc { margin: 0 0 0.45rem; font-size: 0.82rem; color: var(--muted); }
+    .card-fit { font-size: 0.8rem; margin-bottom: 0.45rem; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .card-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 0.7rem; border-top: 1px solid var(--border); }
+
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: min(640px, 76vh);
+      container-type: inline-size;
+    }
+    .matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.82rem;
+      --label-2: "Layer";
+      --label-3: "Ecosystem";
+      --label-4: "License";
+      --label-5: "Architecture Pattern";
+      --label-6: "Sweet Spot";
+      --label-7: "Inspect";
+    }
+    .matrix-table th, .matrix-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    .matrix-table thead { position: sticky; inset-block-start: 0; z-index: 2; background: var(--surface); }
+    .matrix-table tbody th { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--card); font-weight: 700; }
+
+    @container (width < 640px) {
+      .matrix-table, .matrix-table thead, .matrix-table tbody, .matrix-table tr, .matrix-table th, .matrix-table td { display: block; }
+      .matrix-table thead { display: none; }
+      .matrix-table tr { margin-block-end: 1rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+      .matrix-table tbody th { position: sticky; inset-block-start: 0; z-index: 2; background: var(--surface); }
+      .matrix-table td:nth-child(2)::before { content: var(--label-2) ": "; font-weight: 700; color: var(--muted); }
+      .matrix-table td:nth-child(3)::before { content: var(--label-3) ": "; font-weight: 700; color: var(--muted); }
+      .matrix-table td:nth-child(4)::before { content: var(--label-4) ": "; font-weight: 700; color: var(--muted); }
+      .matrix-table td:nth-child(5)::before { content: var(--label-5) ": "; font-weight: 700; color: var(--muted); }
+      .matrix-table td:nth-child(6)::before { content: var(--label-6) ": "; font-weight: 700; color: var(--muted); }
+      .matrix-table td:nth-child(7)::before { content: var(--label-7) ": "; font-weight: 700; color: var(--muted); }
+    }
+
+    .blueprints-grid, .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+    .bp-row { display: grid; grid-template-columns: 140px 1fr; gap: 0.5rem; padding: 0.45rem 0; border-top: 1px solid var(--border); font-size: 0.82rem; }
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    dialog {
+      max-width: 680px;
+      width: calc(100% - 2rem);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card);
+      color: var(--text);
+      padding: 0;
+    }
+    dialog::backdrop { background-color: rgba(0, 0, 0, 0.55); backdrop-filter: blur(3px); }
+    .dlg-form { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.9rem; }
+    .dlg-head, .dlg-foot { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+    .dlg-head { border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+    .dlg-foot { border-top: 1px solid var(--border); padding-top: 0.75rem; justify-content: flex-end; }
+    .pros-cons { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; }
+    .box-inner { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.82rem; }
+    .ok-txt { color: var(--ok); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+    .warn-txt { color: var(--warn); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="panel">
+      <div class="header-top">
+        <div>
+          <span class="eyebrow">2026 ARCHITECT EDITION</span>
+          <h1>AI Solution Architect's Complete Ready Reckoner</h1>
+          <p class="sub">Cloud-Agnostic &amp; Open Source First + AWS, Azure, Google Cloud, Databricks &amp; Snowflake</p>
+        </div>
+        <div class="stats">
+          <div class="stat-box"><div id="statTotal" class="stat-num">0</div><div class="stat-lbl">Tool &amp; Concept Suites</div></div>
+          <div class="stat-box"><div class="stat-num">19</div><div class="stat-lbl">Stack Layers</div></div>
+          <div class="stat-box"><div id="statShowing" class="stat-num">0</div><div class="stat-lbl">Matching</div></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <div class="tabs" role="group" aria-label="Dashboard views">
+          <button type="button" data-view="cards" class="view-btn active">Explorer Cards</button>
+          <button type="button" data-view="table" class="view-btn">Decision Matrix Table</button>
+          <button type="button" data-view="concepts" class="view-btn">Core Concepts &amp; Sub-Types (9)</button>
+          <button type="button" data-view="scenarios" class="view-btn">Scenario &amp; Industry Handbook</button>
+          <button type="button" data-view="blueprints" class="view-btn">Reference Stack Blueprints (5)</button>
+          <button type="button" data-view="compare" class="view-btn">Compare Selected (<span id="compareCount">0</span>/3)</button>
+        </div>
+        <button type="button" id="resetFiltersBtn" class="link-btn">Reset all filters</button>
+      </div>
+    </header>
+
+    <section id="filterBar" class="panel" aria-label="Search and filter tools">
+      <div class="controls-grid">
+        <div>
+          <label for="searchInput">Search tools, concepts, chunking, embeddings, protocols, or patterns</label>
+          <input id="searchInput" type="search" placeholder="e.g., chunking, tokenization, Matryoshka, HNSW, RRF, Strands, MCP, LangGraph..." />
+        </div>
+        <div>
+          <label for="ecoSelect">Ecosystem / Cloud</label>
+          <select id="ecoSelect">
+            <option value="ALL">All Ecosystems</option>
+            <option value="OSS / Agnostic">Cloud-Agnostic &amp; Open Source</option>
+            <option value="AWS">AWS Ecosystem</option>
+            <option value="Microsoft / Azure">Microsoft / Azure Ecosystem</option>
+            <option value="Google Cloud">Google Cloud Ecosystem</option>
+            <option value="Data Platforms">Databricks &amp; Snowflake</option>
+            <option value="Commercial SaaS">Commercial AI-Native SaaS</option>
+          </select>
+        </div>
+        <div>
+          <label for="licSelect">Licensing Model</label>
+          <select id="licSelect">
+            <option value="ALL">All Licenses</option>
+            <option value="Open Source">Permissive OSS (MIT / Apache 2.0)</option>
+            <option value="Open-Core">Open-Core / Fair-Code + Enterprise</option>
+            <option value="Managed / Proprietary">Managed Cloud / Proprietary</option>
+          </select>
+        </div>
+      </div>
+      <div id="layerPills" class="pills" role="group" aria-label="Filter by stack layer"></div>
+    </section>
+
+    <main id="cardsView" class="cards-grid"></main>
+
+    <section id="tableView" class="panel hidden">
+      <div tabindex="0" role="region" aria-labelledby="matrix-caption" class="table-wrapper">
+        <table class="matrix-table">
+          <caption id="matrix-caption" class="sr-only">AI Solution Architect Tooling Decision Matrix</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tool / Spec</th>
+              <th scope="col">Layer</th>
+              <th scope="col">Ecosystem</th>
+              <th scope="col">License</th>
+              <th scope="col">Architecture Pattern</th>
+              <th scope="col">Sweet Spot</th>
+              <th scope="col">Inspect</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="conceptsView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
+
+    <section id="scenariosView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
+
+    <section id="blueprintsView" class="blueprints-grid hidden"></section>
+
+    <section id="compareView" class="panel hidden">
+      <div class="header-top" style="margin-bottom:0.75rem;">
+        <h2 style="margin:0;font-size:1.1rem;">Side-by-Side Architectural Comparison (Up to 3)</h2>
+        <button type="button" id="clearCompareBtn" class="link-btn">Clear selection</button>
+      </div>
+      <div id="compareContent"></div>
+    </section>
+  </div>
+
+  <dialog id="detailDialog" closedby="any" aria-labelledby="dialogTitle">
+    <form method="dialog" class="dlg-form">
+      <div class="dlg-head">
+        <div>
+          <div id="dialogBadges" class="tag-list" style="margin-bottom:0.4rem;"></div>
+          <h2 id="dialogTitle" style="margin:0;font-size:1.25rem;">Tool Name</h2>
+        </div>
+        <button type="submit">Close (Esc)</button>
+      </div>
+      <div id="dialogBody" style="display:flex;flex-direction:column;gap:0.75rem;font-size:0.875rem;"></div>
+      <div class="dlg-foot">
+        <button type="submit" class="primary-btn">Done</button>
+      </div>
+    </form>
+  </dialog>
+  <script>
+    const LAYERS = [
+      "ALL",
+      "1. Protocols & Specs",
+      "2. Models, Gateways & Serving",
+      "3. Agent Frameworks",
+      "4. Managed Runtimes & Builders",
+      "5. Memory & Sandboxes",
+      "6. Vector & Graph DBs",
+      "7. RAG, Parsing & Embeddings",
+      "8. Evals & Benchmarking",
+      "9. LLMOps & Observability",
+      "10. Guardrails & Security",
+      "11. Coding & SWE Agents",
+      "12. Durable Workflows",
+      "13. Fine-Tuning & GPU MLOps",
+      "14. Multimodal (Voice/Vision/Video)",
+      "15. AI App UX SDKs",
+      "16. Governance, Risk & FinOps",
+      "17. Industry, Legacy & Constraints",
+      "18. Core AI Concepts & Algorithms"
+    ];
+
+    const TOOLS = [
+      {
+        id: "mcp", name: "MCP (Model Context Protocol)", layer: "1. Protocols & Specs", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "MIT / Open Spec (Anthropic)",
+        protocols: ["MCP", "JSON-RPC 2.0", "OAuth 2.1"],
+        pattern: "Client-Host-Server boundary over stdio or Streamable HTTP for Tools, Resources, Prompts & MCP Apps.",
+        bestFor: "Universal plug-and-play connector standard between any LLM/IDE/Agent and enterprise APIs or data.",
+        pros: ["Eliminates N×M custom tool integrations across agents & IDEs", "Supported natively by Strands, ADK, MAF, LangGraph, OpenAI, Cursor & Claude Code", "MCP Apps extension renders interactive sandboxed HTML widgets inline"],
+        cons: ["Loading >30 tools bloats prompt tokens and degrades tool selection", "Requires strict OAuth 2.1 user-scoped tokens to prevent confused-deputy & tool-poisoning risks"],
+        alternatives: "Custom OpenAPI function schemas, proprietary connector plugins"
+      },
+      {
+        id: "a2a", name: "A2A (Agent2Agent Protocol)", layer: "1. Protocols & Specs", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 (Linux Foundation / Google)",
+        protocols: ["A2A", "HTTP/SSE", "Agent Cards"],
+        pattern: "Horizontal cross-agent discovery (/.well-known/agent.json), task negotiation, async webhooks & artifact exchange.",
+        bestFor: "Cross-team, cross-cloud multi-agent collaboration (e.g., Azure MAF agent delegating to AWS Strands agent).",
+        pros: ["Opaque interoperability—peers never expose internal prompts, memory, or code", "Native support for long-running async background tasks"],
+        cons: ["Unnecessary serialization overhead for in-process subagents sharing memory"],
+        alternatives: "In-process LangGraph subgraphs, OpenAI Handoffs, Strands Swarms"
+      },
+      {
+        id: "ag-ui", name: "AG-UI & OpenTelemetry GenAI", layer: "1. Protocols & Specs", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "MIT / Apache 2.0 (CopilotKit / CNCF)",
+        protocols: ["AG-UI", "OTEL GenAI", "SSE"],
+        pattern: "AG-UI standardizes backend-to-UI SSE streaming/HITL interrupts; OTEL GenAI standardizes gen_ai.* telemetry spans.",
+        bestFor: "Decoupling React frontends and enterprise APM/LLMOps backends from agent framework churn.",
+        pros: ["Prevents custom brittle WebSocket schemas for generative UI & HITL approvals", "OTEL routes traces simultaneously to Datadog/Grafana and Langfuse/Phoenix"],
+        cons: ["Emerging spec revisions require keeping collector/SDK versions aligned"],
+        alternatives: "Custom SSE protocols, vendor-locked tracing SDKs"
+      },
+      {
+        id: "agents-md", name: "AGENTS.md & SKILL.md", layer: "1. Protocols & Specs", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Cross-Vendor Open Convention",
+        protocols: ["Markdown", "Progressive Disclosure"],
+        pattern: "Repo-root AGENTS.md provides build/style/test laws; SKILL.md folders package on-demand workflows & scripts.",
+        bestFor: "Standardizing repository context across Claude Code, Cursor, Codex, Antigravity, and Devin.",
+        pros: ["Zero lock-in plain Markdown committed in Git", "SKILL.md loads procedural instructions only when relevant, saving context window"],
+        cons: ["Stale instructions mislead autonomous agents if not maintained in PRs"],
+        alternatives: "Tool-specific .cursorrules or proprietary system prompts"
+      },
+      {
+        id: "litellm", name: "LiteLLM", layer: "2. Models, Gateways & Serving", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT Core + Enterprise RBAC/SSO",
+        protocols: ["OpenAI API", "OTEL", "MCP Gateway"],
+        pattern: "Unified Python SDK & AI Gateway Proxy normalizing 100+ model APIs with virtual keys, budgets & fallbacks.",
+        bestFor: "Default self-hosted AI Gateway for multi-cloud routing, FinOps cost chargebacks, and automatic failover.",
+        pros: ["Translates Bedrock, Vertex, Azure, Anthropic, Gemini & vLLM to one schema", "Built-in virtual keys, team budgets, Redis semantic cache & OTEL callbacks"],
+        cons: ["Python FastAPI proxy needs horizontal scaling + DB connection tuning above 5k+ RPS"],
+        alternatives: "Portkey, Kong AI Gateway, Bifrost, OpenRouter"
+      },
+      {
+        id: "portkey", name: "Portkey AI Gateway", layer: "2. Models, Gateways & Serving", ecosystem: "Commercial SaaS", license: "Open-Core", licenseDetail: "OSS Gateway + Enterprise Control Plane",
+        protocols: ["OpenAI API", "OTEL", "MCP"],
+        pattern: "Ultra-low-latency AI Gateway with canary routing, fallback trees, semantic cache & inline guardrails.",
+        bestFor: "Enterprises wanting a turnkey SOC2/HIPAA AI Control Plane with FinOps + Guardrails.",
+        pros: ["Sub-millisecond latency overhead", "Rich UI for routing rules, prompt versioning, budget limits & compliance logs"],
+        cons: ["Full governance, SSO, and analytics require commercial Enterprise plan"],
+        alternatives: "LiteLLM, Kong AI Gateway, Cloudflare AI Gateway"
+      },
+      {
+        id: "vllm-sglang", name: "vLLM & SGLang", layer: "2. Models, Gateways & Serving", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0",
+        protocols: ["OpenAI API", "gRPC"],
+        pattern: "High-throughput GPU LLM inference engines using PagedAttention (vLLM) & RadixAttention prefix caching (SGLang).",
+        bestFor: "Self-hosting Llama, Qwen, DeepSeek, Mistral, or Gemma on Kubernetes GPU clusters.",
+        pros: ["vLLM is the battle-tested K8s standard with broadest model day-0 support", "SGLang excels at multi-turn agent KV-cache reuse & fast constrained JSON decoding"],
+        cons: ["Requires GPU DevOps expertise (KV-cache sizing, tensor parallelism, autoscaling)"],
+        alternatives: "NVIDIA TensorRT-LLM / NIM, Ollama (local dev only)"
+      },
+      {
+        id: "frontier-clouds", name: "Bedrock / Azure Foundry / Vertex Model Garden", layer: "2. Models, Gateways & Serving", ecosystem: "AWS", license: "Managed / Proprietary", licenseDetail: "AWS / Azure / GCP Managed APIs",
+        protocols: ["HTTPS", "PrivateLink / PSC", "IAM"],
+        pattern: "Enterprise-governed frontier model endpoints (Claude, GPT, Gemini, Nova, Llama) inside cloud VPC boundaries.",
+        bestFor: "Zero-data-retention (ZDR), HIPAA/SOC2/FedRAMP compliance, private networking & unified cloud billing.",
+        pros: ["No training on customer prompts", "Uses existing cloud IAM, PrivateLink, and committed spend discounts"],
+        cons: ["Regional quota limits require cross-region inference profiles or AI Gateway failover"],
+        alternatives: "Direct Anthropic/OpenAI Enterprise APIs, self-hosted vLLM"
+      },
+      {
+        id: "langgraph", name: "LangGraph (LangChain Ecosystem)", layer: "3. Agent Frameworks", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT SDK + Commercial LangGraph Platform",
+        protocols: ["MCP", "A2A", "AG-UI", "OTEL"],
+        pattern: "Stateful cyclical state-machine graphs with durable Postgres/Redis checkpointers and HITL interrupts.",
+        bestFor: "Mission-critical, stateful, multi-step workflows needing strict branching control, pause/resume & time-travel replay.",
+        pros: ["Gold standard for durable execution & human-in-the-loop state inspection", "Massive LangChain integration ecosystem (Python & TypeScript)"],
+        cons: ["Verbose state-reducer boilerplate for simple agents", "Managed LangGraph Platform has commercial licensing"],
+        alternatives: "AWS Strands, Google ADK, Microsoft Agent Framework, PydanticAI"
+      },
+      {
+        id: "aws-strands", name: "AWS Strands Agents SDK", layer: "3. Agent Frameworks", ecosystem: "AWS", license: "Open Source", licenseDetail: "Apache 2.0 (AWS)",
+        protocols: ["MCP", "A2A", "OTEL"],
+        pattern: "Model-first autonomous loop (Model + Tools + Prompt) with multi-agent Swarms, Graphs & Agents-as-Tools.",
+        bestFor: "AWS & cloud-agnostic teams wanting minimal Python/TS code that scales directly to Bedrock AgentCore or Lambda.",
+        pros: ["Tiny ergonomic API (@tool decorator); battle-tested inside Amazon Q & Glue", "First-class native MCP, A2A & OpenTelemetry out of the box", "Supports Bedrock, Anthropic, OpenAI, Gemini, LiteLLM & Ollama"],
+        cons: ["Relies on strong frontier reasoning models rather than rigid legacy chains"],
+        alternatives: "LangGraph, Google ADK, OpenAI Agents SDK"
+      },
+      {
+        id: "ms-agent-framework", name: "Microsoft Agent Framework (MAF 1.0)", layer: "3. Agent Frameworks", ecosystem: "Microsoft / Azure", license: "Open Source", licenseDetail: "MIT (Unifies Semantic Kernel + AutoGen)",
+        protocols: ["MCP", "A2A", "OTEL"],
+        pattern: "Enterprise middleware & DI (Semantic Kernel) fused with dynamic multi-agent graph workflows (AutoGen) across .NET & Python.",
+        bestFor: "Enterprise C#/.NET and Python organizations standardized on Azure AI Foundry, Entra ID, and M365.",
+        pros: ["1:1 conceptual parity across .NET and Python", "Replaces SK vs. AutoGen fragmentation (classic AutoGen community fork continues as AG2)", "Native MCP, A2A, and Copilot Studio interoperability"],
+        cons: ["Heavier enterprise ceremony than minimalist Python-only SDKs"],
+        alternatives: "LangGraph, Google ADK, AG2 (community AutoGen)"
+      },
+      {
+        id: "google-adk", name: "Google Agent Development Kit (ADK)", layer: "3. Agent Frameworks", ecosystem: "Google Cloud", license: "Open Source", licenseDetail: "Apache 2.0 (Google)",
+        protocols: ["MCP", "A2A", "OTEL"],
+        pattern: "Code-first hierarchical composition (SequentialAgent, ParallelAgent, LoopAgent + dynamic LLM routing).",
+        bestFor: "Polyglot enterprises (Python, TypeScript, Go, Java) and teams deploying to Vertex AI Agent Engine.",
+        pros: ["First-class Java & Go SDKs alongside Python & TS", "Includes built-in local web debugger (adk web) and CLI eval runner (adk eval)", "Native bidirectional audio/video streaming with Gemini"],
+        cons: ["Deepest managed connectors naturally favor Google Cloud services"],
+        alternatives: "AWS Strands, LangGraph, Microsoft Agent Framework"
+      },
+      {
+        id: "openai-agents-sdk", name: "OpenAI Agents SDK", layer: "3. Agent Frameworks", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "MIT (OpenAI)",
+        protocols: ["MCP", "OpenAI Responses"],
+        pattern: "Ultra-lightweight primitives: Agent, Runner, Tool, Handoffs, and parallel Guardrails.",
+        bestFor: "Fast Python/TS agent delivery without heavy framework abstractions, plus Realtime Voice agents.",
+        pros: ["Learnable in 30 minutes; uses plain Python control flow", "Built-in tracing, input/output guardrails, and LiteLLM multi-model compatibility"],
+        cons: ["You bring your own durable distributed persistence/checkpointing layer"],
+        alternatives: "PydanticAI, AWS Strands, LangGraph"
+      },
+      {
+        id: "pydantic-ai", name: "PydanticAI", layer: "3. Agent Frameworks", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "MIT (Pydantic Team)",
+        protocols: ["MCP", "OTEL (Logfire)", "AG-UI"],
+        pattern: "FastAPI-inspired type-safe agent framework with generic Dependency Injection (RunContext[Deps]) and strict Pydantic validation.",
+        bestFor: "Production Python backend teams prioritizing static type-checking, clean unit testing, and structured outputs.",
+        pros: ["Best IDE autocomplete & mypy/pyright type safety in Python AI", "Cleanest DI pattern for mocking DBs and APIs in pytest"],
+        cons: ["Python-only ecosystem"],
+        alternatives: "OpenAI Agents SDK, LangGraph, AWS Strands"
+      },
+      {
+        id: "crewai", name: "CrewAI", layer: "3. Agent Frameworks", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT Core + CrewAI Enterprise AMP",
+        protocols: ["MCP", "OTEL"],
+        pattern: "Role-playing collaborative Crews (Role, Goal, Backstory) combined with deterministic event-driven CrewAI Flows.",
+        bestFor: "Business workflow automation mirroring human specialist teams (Researcher → Financial Analyst → Compliance Writer).",
+        pros: ["Fastest conceptual ramp-up for cross-functional teams", "Standalone architecture independent of LangChain"],
+        cons: ["Unbounded autonomous role chatter can inflate token cost if not constrained via Flows"],
+        alternatives: "LangGraph, Microsoft Agent Framework, n8n"
+      },
+      {
+        id: "smolagents-dspy-mastra", name: "Smolagents / Mastra / DSPy", layer: "3. Agent Frameworks", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 / MIT",
+        protocols: ["MCP", "OTEL"],
+        pattern: "Specialized paradigms: Smolagents (Python CodeAgent), Mastra (TypeScript-native stack), DSPy (self-optimizing prompt compiler).",
+        bestFor: "Smolagents for code-as-action efficiency; Mastra for Next.js/Node teams; DSPy for mathematical prompt/pipeline optimization.",
+        pros: ["Smolagents cuts multi-tool roundtrips by writing composable Python", "DSPy automatically re-tunes prompts when swapping frontier to smaller open models", "Mastra gives TS devs a cohesive batteries-included agent framework"],
+        cons: ["Smolagents requires mandatory E2B/Docker sandboxing; DSPy has a steeper declarative learning curve"],
+        alternatives: "LlamaIndex Workflows, Haystack"
+      },
+      {
+        id: "bedrock-agentcore", name: "Amazon Bedrock AgentCore", layer: "4. Managed Runtimes & Builders", ecosystem: "AWS", license: "Managed / Proprietary", licenseDetail: "AWS Serverless Managed Runtime",
+        protocols: ["MCP", "A2A", "OTEL", "AWS IAM"],
+        pattern: "Framework-agnostic serverless runtime with MicroVM session isolation, managed Memory, Identity Vault & MCP Gateway.",
+        bestFor: "Running stateful, code-executing, or multi-tenant enterprise agents securely on AWS.",
+        pros: ["Works with Strands, LangGraph, CrewAI, or LlamaIndex", "Dedicated microVM per session eliminates noisy-neighbor & RCE blast radius"],
+        cons: ["AWS cloud coupling for runtime primitives"],
+        alternatives: "Vertex AI Agent Engine, Azure AI Foundry Agent Service, Self-hosted K8s + E2B"
+      },
+      {
+        id: "vertex-foundry-databricks", name: "Vertex Agent Engine / Azure Foundry / Mosaic AI", layer: "4. Managed Runtimes & Builders", ecosystem: "Data Platforms", license: "Managed / Proprietary", licenseDetail: "GCP / Azure / Databricks / Snowflake",
+        protocols: ["MCP", "A2A", "OTEL"],
+        pattern: "Managed enterprise runtimes tightly bound to cloud IAM, Unity Catalog, SharePoint, or Snowflake RBAC.",
+        bestFor: "Deploying agents right next to governed corporate data perimeters with zero data exfiltration.",
+        pros: ["Databricks Mosaic AI & Snowflake Cortex inherit row/column ACLs automatically", "Agentspace & Copilot Studio provide instant employee-facing UIs"],
+        cons: ["Cross-cloud portability requires keeping core agent logic in OSS SDKs (ADK/MAF/LangGraph)"],
+        alternatives: "Bedrock AgentCore, Self-hosted Kubernetes"
+      },
+      {
+        id: "dify-n8n", name: "Dify & n8n AI", layer: "4. Managed Runtimes & Builders", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Commercial Enterprise / Fair-Code Self-Host",
+        protocols: ["MCP", "REST / Webhooks"],
+        pattern: "Visual workflow studios combining deterministic SaaS connectors, RAG pipelines, and LLM agent nodes.",
+        bestFor: "Dify for internal AI CoE self-service studios; n8n when 85% of the workflow is deterministic SaaS/webhook automation.",
+        pros: ["Massive time-to-value for internal business & ops automations", "Self-hostable in Docker/K8s VPCs"],
+        cons: ["Complex cyclic branching & Git-based unit testing become awkward in visual canvases", "Check Dify multi-tenant & n8n Sustainable Use license terms for commercial SaaS embedding"],
+        alternatives: "Langflow (MIT), Flowise (Apache 2.0), Copilot Studio"
+      },
+      {
+        id: "mem0-zep-letta", name: "Mem0 / Zep (Graphiti) / Letta", layer: "5. Memory & Sandboxes", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 OSS Engines + Managed Cloud",
+        protocols: ["MCP", "REST / Python / TS"],
+        pattern: "Long-term cross-session memory: atomic fact extraction (Mem0), bi-temporal knowledge graphs (Graphiti), OS virtual memory (Letta).",
+        bestFor: "Personalized copilots & customer agents that must remember evolving facts across weeks or months.",
+        pros: ["Mem0 drops into any agent in 5 lines of code", "Zep/Graphiti tracks valid_at/invalid_at timestamps so outdated facts don't cause hallucinations", "Letta enables self-editing stateful agents"],
+        cons: ["Background LLM fact extraction adds write-path token cost", "Must guard against memory poisoning from untrusted inputs"],
+        alternatives: "LangMem, Cognee, Custom Postgres + pgvector user profiles"
+      },
+      {
+        id: "e2b-daytona-browserbase", name: "E2B / Daytona / Browserbase + Stagehand", layer: "5. Memory & Sandboxes", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "OSS SDKs + Managed Sandbox Clouds",
+        protocols: ["MCP", "Playwright / CDP", "Firecracker"],
+        pattern: "Sub-200ms isolated Firecracker microVMs (E2B), dev containers (Daytona), and stealth cloud Chromium (Browserbase).",
+        bestFor: "Safely executing LLM-generated Python/Bash code, data science charts, coding tasks, and web UI automation.",
+        pros: ["Prevents RCE and container escape inside your core app cluster", "Stagehand blends deterministic Playwright with self-healing AI act()/extract()"],
+        cons: ["Requires egress firewall policies to prevent sandboxed agents from attacking internal networks"],
+        alternatives: "Modal Sandboxes, Bedrock AgentCore Code Interpreter, Firecrawl / Crawl4AI"
+      },
+      {
+        id: "pgvector", name: "PostgreSQL (pgvector + pgvectorscale / ParadeDB)", layer: "6. Vector & Graph DBs", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "PostgreSQL / Elastic / MIT",
+        protocols: ["SQL", "MCP"],
+        pattern: "Relational ACID database extended with HNSW, StreamingDiskANN (pgvectorscale) & BM25 full-text (ParadeDB).",
+        bestFor: "Default starting architecture (<20M vectors) when relational joins, transactional consistency & low ops matter.",
+        pros: ["Zero new DB vendor or sync lag between operational tables and embeddings", "Available on AWS RDS/Aurora, GCP AlloyDB, Azure Postgres, Supabase & Neon"],
+        cons: ["High-churn 100M+ vector workloads require dedicated vector DB sharding"],
+        alternatives: "Qdrant, Pinecone, LanceDB"
+      },
+      {
+        id: "qdrant", name: "Qdrant", layer: "6. Vector & Graph DBs", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 (Rust) + Qdrant Cloud",
+        protocols: ["gRPC / REST", "MCP"],
+        pattern: "High-performance Rust vector & sparse-hybrid search engine with payload-aware HNSW and binary/scalar quantization.",
+        bestFor: "High-QPS multi-tenant RAG needing strict RBAC metadata filtering, low RAM footprint, and cloud-agnostic K8s deployment.",
+        pros: ["Exceptional tail latency & memory compression in Rust", "Native dense + sparse (BM25/SPLADE) + multi-vector (ColBERT) in single queries"],
+        cons: ["Focused pure search engine (bring your own embedding pipeline or client integration)"],
+        alternatives: "Milvus, Weaviate, Pinecone"
+      },
+      {
+        id: "milvus-pinecone-weaviate", name: "Milvus / Pinecone / Weaviate", layer: "6. Vector & Graph DBs", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 (Milvus), BSD-3 (Weaviate), SaaS (Pinecone)",
+        protocols: ["gRPC / REST", "MCP"],
+        pattern: "Enterprise dedicated vector engines spanning zero-ops serverless (Pinecone) to 10B+ vector disaggregated clusters (Milvus).",
+        bestFor: "Pinecone for zero-ops serverless; Milvus/Zilliz for billion-scale enterprise lakes; Weaviate for rapid modular hybrid apps.",
+        pros: ["Proven horizontal scale & namespace multi-tenancy", "Rich hybrid sparse-dense & reranking integrations"],
+        cons: ["Distributed Milvus has heavy K8s infra components; Pinecone has no OSS self-hosted edition"],
+        alternatives: "Qdrant, LanceDB, Turbopuffer"
+      },
+      {
+        id: "lancedb-turbopuffer-neo4j", name: "LanceDB / Turbopuffer / Neo4j", layer: "6. Vector & Graph DBs", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 (LanceDB), SaaS (Turbopuffer), GPL/EE (Neo4j)",
+        protocols: ["S3/GCS Object Storage", "Cypher (Neo4j)"],
+        pattern: "S3-native serverless columnar vector search (LanceDB/Turbopuffer) & Property Graph + Vector stores (Neo4j/FalkorDB).",
+        bestFor: "LanceDB/Turbopuffer for massive multimodal or multi-tenant codebase scale at 10x lower cost; Neo4j for GraphRAG.",
+        pros: ["Decouples cheap object storage from stateless query compute", "Neo4j/FalkorDB unlock multi-hop lineage & global GraphRAG reasoning"],
+        cons: ["Object-storage cold queries trade ~30–150ms first-hit latency vs. pure RAM HNSW"],
+        alternatives: "Vespa, Chroma, Amazon Neptune"
+      },
+      {
+        id: "docling-llamaparse", name: "Docling (IBM) & LlamaParse", layer: "7. RAG, Parsing & Embeddings", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT (Docling) / Commercial API (LlamaParse)",
+        protocols: ["Python CLI/SDK", "Markdown/JSON"],
+        pattern: "Vision-layout & VLM document parsers converting complex multi-column PDFs, financial tables & slides into clean Markdown.",
+        bestFor: "Eliminating broken table/layout hallucinations at the start of enterprise RAG ingestion.",
+        pros: ["Docling runs 100% locally/air-gapped under MIT license with strong TableFormer accuracy", "LlamaParse handles gnarly scanned charts & nested tables via agentic VLM passes"],
+        cons: ["VLM/layout parsing requires GPU workers or batch queue orchestration for millions of pages"],
+        alternatives: "Unstructured.io, Mistral OCR, Reducto, AWS Textract / Azure Doc Intelligence"
+      },
+      {
+        id: "voyage-cohere-bge", name: "Voyage AI / Cohere Rerank / BGE-M3 & ColPali", layer: "7. RAG, Parsing & Embeddings", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Commercial APIs + Apache 2.0 / MIT OSS Models",
+        protocols: ["REST / vLLM / Infinity"],
+        pattern: "Two-stage Hybrid Retrieval: Domain embeddings + BM25 → Cross-Encoder Reranker (or ColPali visual page patches).",
+        bestFor: "Maximizing RAG Context Precision & Recall while slashing hallucination rates.",
+        pros: ["Adding a Cross-Encoder Reranker (Cohere Rerank 3.5 / BGE-Reranker) is the highest-ROI RAG upgrade", "Voyage leads code/finance/legal benchmarks; ColPali skips OCR entirely for visual PDFs"],
+        cons: ["Reranking top-50 chunks adds ~60–150ms latency per query"],
+        alternatives: "OpenAI text-embedding-3-large, Jina v4, Microsoft GraphRAG / LightRAG"
+      },
+      {
+        id: "promptfoo", name: "Promptfoo", layer: "8. Evals & Benchmarking", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT CLI/UI + Enterprise Red-Teaming",
+        protocols: ["CLI / GitHub Actions", "YAML / Python / JS"],
+        pattern: "Declarative matrix evaluation & automated adversarial red-teaming across prompts × models × providers.",
+        bestFor: "CI/CD regression gates on PRs and automated OWASP security red-teaming before go-live.",
+        pros: ["Runs 100% locally with zero vendor SDK lock-in", "Best-in-class automated jailbreak, PII, BOLA & indirect injection scanner"],
+        cons: ["YAML-centric workflow feels less native than pytest for pure Python unit test suites"],
+        alternatives: "DeepEval, Inspect AI, Garak"
+      },
+      {
+        id: "deepeval-ragas-inspect", name: "DeepEval / Ragas / Inspect AI", layer: "8. Evals & Benchmarking", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 / MIT",
+        protocols: ["Pytest", "Docker Sandboxes (Inspect)"],
+        pattern: "Programmatic evaluation suites for RAG Triad metrics (Ragas), pytest agent trajectories (DeepEval) & sandboxed benchmarks (Inspect AI).",
+        bestFor: "Engineering teams embedding Faithfulness, Context Recall & Tool Correctness directly into pytest CI.",
+        pros: ["DeepEval integrates seamlessly with pytest and generates synthetic golden datasets", "Inspect AI (UK AISI) is superb for reproducible sandboxed coding/agent benchmarks"],
+        cons: ["Uncalibrated LLM-as-a-Judge scores drift unless anchored to human SME labels"],
+        alternatives: "Braintrust Autoevals, TruLens"
+      },
+      {
+        id: "langfuse", name: "Langfuse", layer: "9. LLMOps & Observability", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT Core (Self-Hostable) + Cloud/EE",
+        protocols: ["OpenTelemetry", "Python / TS SDKs"],
+        pattern: "Open-source LLMOps platform combining nested agent tracing, versioned Prompt Management, datasets, cost analytics & evals.",
+        bestFor: "Cloud-agnostic enterprises requiring full VPC self-hosting (Docker/K8s) without vendor lock-in.",
+        pros: ["Cleanest MIT-licensed self-hostable alternative to LangSmith", "Client-cached Prompt Registry decouples prompt edits from app redeployments"],
+        cons: ["ClickHouse + Redis + S3 v3 stack adds infra pieces when self-hosting at massive scale"],
+        alternatives: "Arize Phoenix, LangSmith, Braintrust, MLflow Tracing"
+      },
+      {
+        id: "langsmith-phoenix-braintrust", name: "LangSmith / Arize Phoenix / Braintrust", layer: "9. LLMOps & Observability", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "SaaS/EE (LangSmith, Braintrust), OSS OTEL (Phoenix, MLflow)",
+        protocols: ["OpenTelemetry", "OpenInference"],
+        pattern: "End-to-end trace debugging, annotation queues, online production judges & dataset regression loops.",
+        bestFor: "LangSmith for LangGraph teams; Arize Phoenix for 100% OSS OTEL + drift; Braintrust for rapid CI-eval-to-prod flywheel.",
+        pros: ["Turns failed production traces into regression tests in seconds", "MLflow 3 Tracing unifies Databricks/OSS MLOps with 1-line autolog() across 20+ agent SDKs"],
+        cons: ["Standardize on ONE OTEL trace pipeline—avoid double-instrumenting hot paths"],
+        alternatives: "W&B Weave, Maxim AI, Helicone, Datadog LLM Observability"
+      },
+      {
+        id: "guardrails-security", name: "NeMo Guardrails / Lakera Guard / Bedrock Guardrails", layer: "10. Guardrails & Security", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 (NeMo, Guardrails AI) / Commercial (Lakera, Cloud)",
+        protocols: ["REST / Inline Proxy", "Colang"],
+        pattern: "Real-time input/output firewalls blocking prompt injection, PII leaks, toxic content, and ungrounded hallucinations.",
+        bestFor: "Customer-facing agents, untrusted external RAG ingestion, and regulated financial/healthcare deployments.",
+        pros: ["Lakera Guard adds <50ms latency against indirect prompt injections", "Bedrock Automated Reasoning mathematically verifies policy compliance", "Instructor + Native Constrained Decoding guarantee 100% valid Pydantic/JSON outputs"],
+        cons: ["LLM-based rails add latency/cost if placed synchronously on every turn—prefer fast classifier rails"],
+        alternatives: "Azure AI Content Safety (Prompt Shields), Google Model Armor, Llama Guard, PyRIT, Garak"
+      },
+      {
+        id: "agentic-ides", name: "Cursor / Antigravity / AWS Kiro / Windsurf / Copilot / Cline", layer: "11. Coding & SWE Agents", ecosystem: "Commercial SaaS", license: "Open-Core", licenseDetail: "Enterprise ZDR Subscriptions + OSS (Cline/Roo)",
+        protocols: ["MCP", "AGENTS.md", "SKILL.md", "LSP"],
+        pattern: "Agent-native visual IDEs combining codebase indexing, spec-driven planning (Kiro), parallel subagents & browser verification.",
+        bestFor: "Daily synchronous & parallel AI-augmented software engineering across every developer desktop.",
+        pros: ["Cursor leads multi-model Composer & Tab velocity; AWS Kiro adds spec-driven requirements-to-tasks workflows", "Antigravity orchestrates parallel subagents, browser-in-the-loop testing & reusable Skills", "GitHub Copilot & Amazon Q Developer offer enterprise IP indemnity; Cline provides 100% OSS model-neutral MCP extensibility"],
+        cons: ["Mandate Enterprise Zero-Data-Retention (ZDR) tiers and curated MCP allowlists"],
+        alternatives: "Zed AI, JetBrains Junie"
+      },
+      {
+        id: "cli-cloud-swe", name: "Claude Code / Codex / Devin / Aider & CodeRabbit", layer: "11. Coding & SWE Agents", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Commercial (Claude Code, Codex, Devin) + OSS (Aider, OpenHands, Qodo)",
+        protocols: ["MCP", "AGENTS.md", "Git / CI Hooks"],
+        pattern: "Terminal-native reasoning agents (Claude Code, Codex CLI) + Async Cloud VM SWEs (Devin, Codex Cloud) + AI PR Reviewers.",
+        bestFor: "Deep multi-repo architectural refactors from CLI, overnight ticket-to-PR delegation, and automated PR bug gates.",
+        pros: ["Claude Code excels at complex codebase reasoning, shell/test loops, hooks & subagents", "Devin, Codex Cloud & OpenHands execute tickets asynchronously in isolated cloud VMs", "CodeRabbit & Qodo (PR-Agent) catch regressions before human review"],
+        cons: ["Autonomous SWEs fail without crisp ticket specs, fast deterministic CI tests, and an accurate AGENTS.md"],
+        alternatives: "Gemini CLI, Goose (Block OSS), Factory, v0 / Bolt / Lovable (UI prototyping)"
+      },
+      {
+        id: "opensearch-elastic-redis-mongo", name: "OpenSearch / Elasticsearch / Redis / MongoDB Vector", layer: "6. Vector & Graph DBs", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 / Source-Available + Managed Cloud",
+        protocols: ["REST / SQL / JSON", "Bedrock KB"],
+        pattern: "Reuse existing operational search, sub-ms cache, and document platforms for hybrid BM25 + vector retrieval.",
+        bestFor: "Enterprises already operating OpenSearch/Elastic, Redis, or MongoDB Atlas—avoiding net-new DB sprawl.",
+        pros: ["OpenSearch integrates natively with AWS Bedrock Knowledge Bases & observability logs", "Redis combines session state, semantic cache & vector memory at sub-ms latency", "MongoDB co-locates operational JSON documents with vector indexes"],
+        cons: ["Higher memory cost per billion vectors compared to S3-native LanceDB or Rust-compressed Qdrant"],
+        alternatives: "PostgreSQL pgvector, Qdrant, Amazon Neptune / ArangoDB (Graph)"
+      },
+      {
+        id: "enterprise-apm-prompt-mgmt", name: "Dynatrace / Datadog / New Relic + PromptLayer & Giskard", layer: "9. LLMOps & Observability", ecosystem: "Commercial SaaS", license: "Managed / Proprietary", licenseDetail: "Enterprise APM + OSS QA (Giskard)",
+        protocols: ["OpenTelemetry GenAI", "REST"],
+        pattern: "Unified OpenTelemetry ingestion correlating LLM/Agent spans with Kubernetes, DB, APM SLOs, prompt registries & QA.",
+        bestFor: "Enterprises wanting AI observability inside their existing SRE pane of glass (Dynatrace/Datadog) plus governed prompt promotion.",
+        pros: ["Correlates slow tool calls directly to downstream microservice/DB traces", "PromptLayer/Humanloop decouple non-developer prompt governance; Giskard automates RAG/bias vulnerability scans"],
+        cons: ["APM platforms have less specialized prompt-playground & eval dataset UX than LangSmith or Braintrust"],
+        alternatives: "Langfuse, Arize Phoenix, LangSmith, Braintrust"
+      },
+      {
+        id: "durable-workflows", name: "Temporal / DBOS / Restate / Prefect", layer: "12. Durable Workflows", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT / Apache 2.0 / BSL + Managed Clouds",
+        protocols: ["Durable Replay", "Checkpointing", "OTEL"],
+        pattern: "Event-sourced deterministic workflow replay & journaled execution surviving container crashes and multi-day human approvals.",
+        bestFor: "Long-running asynchronous agents (20 mins to multiple days) executing critical enterprise operations.",
+        pros: ["Temporal is the battle-tested distributed durability standard (native PydanticAI & OpenAI SDK support)", "DBOS adds lightweight durable workflows directly atop existing PostgreSQL with zero extra cluster", "Restate prevents paying idle serverless compute during slow LLM/human waits"],
+        cons: ["Requires separating deterministic orchestration logic from side-effecting I/O activities"],
+        alternatives: "Azure Durable Functions, AWS Step Functions, LangGraph Checkpointers"
+      },
+      {
+        id: "finetuning-post-training", name: "Unsloth / Axolotl / HF PEFT & TRL / DeepSpeed", layer: "13. Fine-Tuning & GPU MLOps", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 / MIT",
+        protocols: ["PyTorch", "LoRA / QLoRA / DPO / GRPO"],
+        pattern: "Parameter-efficient fine-tuning (SFT, LoRA, QLoRA, DPO, GRPO) & frontier-to-SLM distillation pipelines.",
+        bestFor: "Distilling expensive frontier model behavior into fast, cheap 8B/14B domain SLMs (never for injecting changing facts—use RAG!).",
+        pros: ["Unsloth cuts VRAM by ~70% and speeds up LoRA/GRPO training 2x", "Axolotl provides reproducible YAML-driven multi-GPU FSDP/DeepSpeed runs", "bitsandbytes/AWQ/GPTQ/FP8 quantization slashes serving GPU cost"],
+        cons: ["Requires curated golden preference/SFT datasets and rigorous regression evals to avoid catastrophic forgetting"],
+        alternatives: "Managed Bedrock / Vertex / Foundry Fine-Tuning, DSPy prompt compilation"
+      },
+      {
+        id: "mlops-gpu-serving", name: "SageMaker / Kubeflow / Ray Serve / Triton & LM Studio", layer: "13. Fine-Tuning & GPU MLOps", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 + Hyperscaler MLOps",
+        protocols: ["CUDA / ROCm", "gRPC / OpenAI API"],
+        pattern: "Model registries, distributed multi-model GPU serving (Ray Serve, Triton, TGI), and local GUI dev servers (LM Studio).",
+        bestFor: "Managing classical ML + custom GenAI model lifecycles, lineage, and H100/H200/B200/MI300X GPU fleet utilization.",
+        pros: ["Triton & Ray Serve co-host embeddings, rerankers, VLMs & LLMs efficiently on shared GPUs", "MLflow / SageMaker / Vertex Model Registries enforce stage promotion & lineage", "LM Studio gives developers an instant local GUI + REST endpoint"],
+        cons: ["Kubernetes + GPU operator management carries steep platform engineering overhead"],
+        alternatives: "vLLM, SGLang, NVIDIA NIM, Managed Serverless Endpoints"
+      },
+      {
+        id: "voice-speech-ai", name: "Deepgram / ElevenLabs / Whisper / Realtime S2S & LiveKit", layer: "14. Multimodal (Voice/Vision/Video)", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "MIT (Whisper, LiveKit, Pipecat) + Commercial Voice APIs",
+        protocols: ["WebRTC / SIP", "WebSockets"],
+        pattern: "Cascaded voice pipelines (STT → LLM → TTS) vs. native Speech-to-Speech (OpenAI Realtime / Gemini Live) over WebRTC.",
+        bestFor: "Contact-center telephony agents, field-service voice copilots, and sub-300ms interactive voice assistants.",
+        pros: ["Deepgram & AssemblyAI lead low-latency streaming STT + diarization; ElevenLabs & Cartesia lead natural TTS", "OpenAI Realtime & Gemini Live natively hear emotion/tone and handle barge-in", "LiveKit Agents & Pipecat solve WebRTC, VAD & interruption plumbing"],
+        cons: ["Speech-to-speech is pricier per minute and harder to guardrail synchronously than cascaded text"],
+        alternatives: "Amazon Polly, Azure Speech, Google Cloud Speech"
+      },
+      {
+        id: "vision-image-video-ai", name: "Adobe Firefly / Flux / Meta SAM / TwelveLabs & PaddleOCR", layer: "14. Multimodal (Voice/Vision/Video)", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Apache 2.0 (SAM, PaddleOCR) + Commercial Creative/Video APIs",
+        protocols: ["REST", "Multimodal Embeddings"],
+        pattern: "IP-safe creative image generation, zero-shot visual segmentation (SAM), multilingual OCR, and temporal Video RAG.",
+        bestFor: "Retail catalog automation, store/manufacturing video analytics, diagram-heavy manuals, and brand-safe marketing.",
+        pros: ["Adobe Firefly provides enterprise copyright/IP indemnification", "Meta SAM + PaddleOCR + Apache Tika power self-hosted visual/document pipelines", "TwelveLabs & Gemini 1M+ context unlock natural-language search across hours of video"],
+        cons: ["Raw video/high-res vision inference consumes massive token/GPU budgets without keyframe sampling"],
+        alternatives: "Stable Diffusion, OpenAI Image/Sora, Google Imagen/Veo"
+      },
+      {
+        id: "ai-app-ux-sdks", name: "Vercel AI SDK / CopilotKit / Chainlit / Streamlit / ChatKit", layer: "15. AI App UX SDKs", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 / MIT",
+        protocols: ["AG-UI", "SSE", "React Server Components"],
+        pattern: "Streaming AI UI toolkits rendering citations, live tool progress, generative components, and human approval gates.",
+        bestFor: "Vercel AI SDK & CopilotKit for production React/Next.js apps; Chainlit/Streamlit/Gradio for Python agent UIs & PoCs.",
+        pros: ["Vercel AI SDK standardizes streaming text/objects across React/Next.js", "CopilotKit + AG-UI wire bidirectional app state & HITL modals into existing SaaS UIs", "Chainlit renders nested Python agent steps out of the box"],
+        cons: ["Do not use Streamlit or Gradio for high-concurrency customer-facing production portals"],
+        alternatives: "OpenAI ChatKit, Custom React + SSE"
+      },
+      {
+        id: "governance-finops-standards", name: "NIST AI RMF / ISO 42001 / EU AI Act / SR 11-7 & FinOps", layer: "16. Governance, Risk & FinOps", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "International Regulatory & Risk Standards",
+        protocols: ["NIST Govern-Map-Measure-Manage", "ISO 42001", "SR 11-7", "MITRE ATLAS"],
+        pattern: "Enterprise AI governance (model inventory, risk tiers, ZDR, auditability) paired with 4-tier caching, Cost-per-Resolved-Task & 4-stage progressive autonomy.",
+        bestFor: "Passing CISO, Legal, Banking MRM (SR 11-7), and CFO scrutiny before scaling agentic systems across the enterprise.",
+        pros: ["ISO/IEC 42001 & NIST AI RMF establish repeatable CISO/Board governance; SR 11-7 governs banking model risk", "Prompt prefix caching + semantic caching + SLM routing cut inference spend by 50–85%", "4-Stage Progressive Autonomy (Shadow → Copilot → Bounded → Audited) de-risks go-live"],
+        cons: ["Semantic caches can leak personalized context across users if not strictly partitioned by tenant/user ACLs", "Verify Zero Data Retention (ZDR) + Abuse Monitoring Opt-Out in enterprise contracts"],
+        alternatives: "Ad-hoc spreadsheet reviews (avoid!)"
+      },
+      {
+        id: "saas-copilots-horizontal-platforms", name: "M365 Copilot / Agentforce / Now Assist / Glean / Moveworks / Sierra", layer: "4. Managed Runtimes & Builders", ecosystem: "Commercial SaaS", license: "Managed / Proprietary", licenseDetail: "Enterprise SaaS Seat / Consumption Licensing",
+        protocols: ["MCP", "A2A", "Native SaaS RBAC"],
+        pattern: "Buy vs. Partner vs. Build: Embedded single-SaaS Copilots (Agentforce, Now Assist) & Horizontal Enterprise Search/Support Platforms (Glean, Moveworks, Sierra, Harvey).",
+        bestFor: "BUY when 85%+ of workflow lives inside one SaaS (Salesforce/ServiceNow/M365); PARTNER for 30+ connector enterprise search/IT helpdesk; BUILD only for proprietary cross-system moats.",
+        pros: ["Zero custom ACL sync plumbing—inherits native SharePoint/Salesforce/ServiceNow permissions out of the box", "Days-to-weeks time-to-value vs. 6 months of custom ETL", "Federates with custom LangGraph/Strands agents via A2A & MCP"],
+        cons: ["Per-seat ($30–$60/mo) or per-resolution pricing requires TCO modeling at scale", "Limited customization for bespoke cross-system domain logic"],
+        alternatives: "Custom LangGraph / AWS Strands / Google ADK build"
+      },
+      {
+        id: "semantic-sql-acl-sync", name: "Cube / dbt Semantic Layer / Cortex Analyst / Genie + SpiceDB & sqlglot", layer: "7. RAG, Parsing & Embeddings", ecosystem: "Data Platforms", license: "Open-Core", licenseDetail: "Apache 2.0 / OSS + Managed Data Platforms",
+        protocols: ["MCP", "SQL / GraphQL", "Zanzibar ReBAC"],
+        pattern: "Governed Semantic Metric Stores + Two-Tier Schema Linker + sqlglot AST validation for Text-to-SQL, paired with SpiceDB/OpenFGA & Kafka CDC for document ACL tombstoning.",
+        bestFor: "Preventing 70%+ Text-to-SQL failure rates on cryptic 5,000-table ERP schemas and enforcing <5-min permission revocation sync in RAG.",
+        pros: ["Cube, dbt Semantic Layer, Genie & Cortex Analyst enforce one canonical definition of business metrics", "sqlglot AST parsing enforces read-only SELECT, blocks Cartesian joins & injects tenant_id filters", "SpiceDB / OpenFGA + Kafka/Debezium webhooks keep vector ACLs in sync with SharePoint/Drive"],
+        cons: ["Requires data engineering investment to curate semantic YAML models and golden SQL pairs"],
+        alternatives: "WrenAI, Vanna.ai, LookML"
+      },
+      {
+        id: "zero-trust-policy-obo", name: "OPA (Open Policy Agent) / AWS Cedar / Oso + OAuth 2.1 OBO & Entra Agent ID", layer: "10. Guardrails & Security", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 (OPA, Cedar) + Cloud Identity",
+        protocols: ["OAuth 2.1 OBO", "OPA Rego / Cedar", "SPIFFE / SPIRE"],
+        pattern: "Deterministic Policy-as-Code at the MCP Tool Gateway + On-Behalf-Of (OBO) user-scoped token exchange and Workload Identity for long-running async agents.",
+        bestFor: "Enforcing hard deterministic boundaries (e.g., 'no refund > $250 without MFA approval') and eliminating shared god-mode service credentials.",
+        pros: ["Deterministic authorization that cannot be jailbroken by prompt injection", "OAuth 2.1 OBO scopes every DB/MCP call to the intersection of User + Agent permissions", "GLiNER / Presidio sliding-window buffers redact PII in <15ms without breaking SSE streaming"],
+        cons: ["Long-running async agents (6+ hours in Temporal) require delegated consent / Entra Agent ID / AgentCore Identity to handle 1-hour JWT expiry"],
+        alternatives: "Cerbos, Okta FGA"
+      },
+      {
+        id: "disaggregated-serving-fast-encoders", name: "NVIDIA Dynamo / Mooncake + ModernBERT / DeBERTa-v3 / GLiNER & FlashRank", layer: "13. Fine-Tuning & GPU MLOps", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Apache 2.0 / MIT",
+        protocols: ["ONNX Runtime", "TensorRT", "RDMA / KV-Cache"],
+        pattern: "Prefill/Decode disaggregated GPU serving (Dynamo/Mooncake) + sub-10ms ONNX/TensorRT encoder models (ModernBERT/GLiNER) & Multi-LoRA serving on shared base models.",
+        bestFor: "Sub-300ms latency budgets, high-concurrency long-context RAG clusters, and scarce on-prem GPU footprints (e.g., 2x L40S).",
+        pros: ["ModernBERT / GLiNER / FlashRank run intent routing, PII redaction & reranking in 3–15ms at 1/100th the cost of a 70B LLM", "vLLM --enable-lora hot-swaps 10+ task adapters on one base model in <2ms", "Prefill/Decode disaggregation prevents 64k-token prompts from stalling streaming decode TPOT"],
+        cons: ["Disaggregated serving requires high-bandwidth RDMA/NVLink cluster networking"],
+        alternatives: "Standard monolithic vLLM/TGI deployments"
+      },
+      {
+        id: "industry-legacy-constraints-suite", name: "Brownfield ERP/Mainframe Facades, CDC Replicas & Sector Compliance Stacks", layer: "17. Industry, Legacy & Constraints", ecosystem: "OSS / Agnostic", license: "Open-Core", licenseDetail: "Enterprise Integration & Sector Patterns",
+        protocols: ["Debezium CDC / Kafka", "Temporal Sagas", "FHIR / FIX / IEC 62443"],
+        pattern: "Read/Write asymmetry for legacy systems (CDC Read-Replicas + Idempotent MCP Saga Write Facades) tailored for Finance, Healthcare, Retail, Manufacturing, Telecom & Gov.",
+        bestFor: "Integrating agents with 20-year-old SAP, Oracle, IBM z/OS CICS Mainframes, air-gapped factory floors, and strict HIPAA/FINRA/FedRAMP enclaves.",
+        pros: ["CDC read-replicas protect mainframes from autonomous agent query loops and runaway MIPS charges", "Anti-corruption MCP facades translate cryptic SOAP/XML/EBCDIC codes into clean Pydantic enums", "Idempotent Temporal/DBOS sagas execute compensating rollbacks on partial multi-system failures"],
+        cons: ["Never grant direct SQL INSERT/UPDATE or raw 3270/RFC write access without an idempotent policy facade"],
+        alternatives: "Inngest / Hatchet durable queues, Enterprise iPaaS (MuleSoft / Workato / Boomi MCP wrappers)"
+      },
+      {
+        id: "concept-tokenization", name: "Tokenization Algorithms (Byte-Level BPE, WordPiece, Unigram/SentencePiece, Byte-Patch BLT)", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Foundational LLM Concept",
+        protocols: ["tiktoken (o200k_base)", "SentencePiece", "UTF-8 Byte BPE"],
+        pattern: "Subword segmentation mapping raw text/code into discrete vocabulary IDs (32k–256k vocab), governing API cost, context length & multilingual fertility.",
+        bestFor: "Byte-Level BPE (tiktoken/Llama/Qwen) for general & code LLMs; Unigram SentencePiece (Gemma/BGE-M3) for CJK/multilingual RAG; WordPiece for BERT encoders.",
+        pros: ["Byte-Level BPE guarantees zero <UNK> out-of-vocabulary tokens on any UTF-8 string", "Unigram SentencePiece handles non-whitespace languages (Chinese, Japanese, Thai) natively without pre-tokenizers", "128k–256k vocabularies slash non-English token fertility by 2x–3x"],
+        cons: ["Never size RAG chunks by len(text)/4—always tokenize with the exact model tokenizer", "Trailing whitespace in prompt prefixes ('http:// ') causes token-healing boundary degradation"],
+        alternatives: "Character-level / Dynamic Byte Latent Transformer (BLT)"
+      },
+      {
+        id: "concept-chunking", name: "Chunking Strategies (Fixed, Recursive, Structure/AST, Parent-Child, Semantic, Late, Contextual & Vision)", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "8 RAG Chunking Paradigms",
+        protocols: ["Parent-Child", "Contextual Retrieval", "Late Chunking", "Tree-sitter AST"],
+        pattern: "Partitions documents into retrievable units balancing embedding specificity (small chunks) against LLM generation completeness (surrounding context).",
+        bestFor: "Structure-Aware + Parent-Child (256-tok child → 1,500-tok parent) as Enterprise Default; Contextual Retrieval for high-value legal/medical; Late Chunking for coreferences.",
+        pros: ["Structure-Aware (Markdown/HTML/AST) never splits tables from headers or functions in half", "Parent-Child gives dense embeddings razor-sharp precision while feeding full sections to the LLM", "Anthropic Contextual Retrieval cuts top-20 retrieval failure rates by 49–67%; Late Chunking preserves pronoun references without LLM cost"],
+        cons: ["Fixed-size chunking severs table headers and clauses", "Semantic & Agentic proposition chunking add ingestion compute cost"],
+        alternatives: "ColPali Vision-Patch page indexing (skips text chunking entirely)"
+      },
+      {
+        id: "concept-embeddings", name: "Embedding Paradigms (Dense Bi-Encoder, Sparse BM25/SPLADE, Matryoshka MRL, ColBERT/ColPali Multi-Vector)", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "6 Vector Representation Types",
+        protocols: ["Dense Bi-Encoder", "BM25 / SPLADE", "Matryoshka (MRL)", "MaxSim Multi-Vector"],
+        pattern: "Maps text, code, and images into geometric vector spaces: single dense vectors, high-dim lexical sparse vectors, truncatable MRL prefixes, or token-level multi-vectors.",
+        bestFor: "Always combine Dense (semantic) + Sparse BM25/SPLADE (exact SKUs/acronyms); use Matryoshka MRL truncation (1536→512 dims) to cut RAM 3x; ColPali for visual PDFs.",
+        pros: ["Matryoshka (MRL) lets you slice vector dimensions dynamically for funnel search & 6x–24x RAM savings", "BGE-M3 outputs Dense + Sparse + Multi-Vector simultaneously in a single forward pass", "ColBERT/ColPali Late-Interaction (MaxSim) approaches Cross-Encoder precision at pre-indexed speeds"],
+        cons: ["Pure dense bi-encoders suffer an information bottleneck on exact part numbers, error codes & rare proper nouns", "Multi-vector ColBERT/ColPali generates 500–1,030 vectors per page (requires binary quantization + pooling)"],
+        alternatives: "Domain-specific asymmetric embeddings (voyage-code-3, voyage-finance-2, voyage-law-2)"
+      },
+      {
+        id: "concept-indexing-distance", name: "Vector Indexing (HNSW, DiskANN, IVF-PQ, Flat) & Distance Metrics (Cosine, Dot/IP, L2, Hamming) + Quantization", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "ANN Graph & Compression Math",
+        protocols: ["HNSW", "StreamingDiskANN", "SQ8 / PQ / Binary Quantization", "Cosine / IP / L2 / MaxSim"],
+        pattern: "Balances Recall@K, Query Latency, and RAM cost using proximity graphs (HNSW/DiskANN), Voronoi clusters (IVF), and vector bit-width compression (FP16/SQ8/PQ/BQ).",
+        bestFor: "HNSW + SQ8 (INT8) for <20M vectors in RAM; StreamingDiskANN (pgvectorscale/Milvus) or Binary Quantization (32x compression + oversample rescore) for 50M–1B+ scale.",
+        pros: ["When vectors are unit-normalized (L2=1), Dot Product (IP) gives identical ranking to Cosine at higher SIMD speed", "Scalar Quantization (SQ8) cuts RAM by 4x with ~99% recall retention", "DiskANN stores 80%+ of graph on NVMe SSD, slashing memory bills by 75–90%"],
+        cons: ["Unfiltered HNSW suffers a 'Recall Cliff' when metadata filters match <1% of corpus (use Qdrant payload-aware HNSW or pgvector iterative_scan)"],
+        alternatives: "S3-native columnar IVF-PQ (LanceDB / Turbopuffer) for cold multi-tenant namespaces"
+      },
+      {
+        id: "concept-retrieval-reranking", name: "Retrieval, Query Transformation (Rewrite, Multi-Query, HyDE, Step-Back) & Reranking (RRF, Cross-Encoder, GraphRAG)", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "End-to-End Retrieval Pipeline",
+        protocols: ["Reciprocal Rank Fusion (RRF)", "Cross-Encoder", "HyDE", "GraphRAG / LightRAG / RAPTOR"],
+        pattern: "Pre-retrieval query transformation → Parallel Dense + Sparse retrieval → RRF Rank Fusion → Stage-2 Cross-Encoder Reranking (or GraphRAG/Agentic CRAG).",
+        bestFor: "Two-Stage Hybrid RAG (Dense + BM25 + RRF + Cross-Encoder Reranker) for 85% of enterprise apps; LightRAG/RAPTOR for global corpus themes; CRAG for multi-hop research.",
+        pros: ["Reciprocal Rank Fusion (RRF) merges BM25 and Dense lists without fragile score normalization", "Cross-Encoder Rerankers (Cohere Rerank 3.5 / BGE-Reranker) boost NDCG@5 by +15–30% by attending across query+chunk tokens", "Query Rewriting resolves conversational pronouns before hitting the index"],
+        cons: ["HyDE hurts precision if the LLM hallucinates wrong domain jargon on proprietary topics", "Full Microsoft GraphRAG is token-heavy on ingestion—prefer LightRAG or RAPTOR when budgets are tight"],
+        alternatives: "FlashRank (<15ms CPU ONNX reranker), ColBERT Late-Interaction, Listwise LLM Reranking"
+      },
+      {
+        id: "concept-attention-architectures", name: "Attention & Model Architectures (MHA vs. GQA vs. MLA, FlashAttention, Dense vs. MoE, Hybrid SSM/Mamba)", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Transformer Internals & Scaling",
+        protocols: ["GQA / MLA", "FlashAttention-3", "Sparse MoE", "Hybrid Mamba-Transformer"],
+        pattern: "Optimizes the quadratic O(N²) prefill compute and linear KV-cache VRAM bottleneck of autoregressive Transformers.",
+        bestFor: "GQA/MLA models for high-concurrency serving; Sparse MoE (DeepSeek/Qwen-MoE/Llama-4) for fast cloud throughput; Dense (Qwen-32B/Llama-70B) for constrained on-prem GPU VRAM.",
+        pros: ["Grouped-Query Attention (GQA) cuts KV-cache 4x–8x; DeepSeek Multi-head Latent Attention (MLA) cuts KV-cache 80–93%", "FlashAttention tiles Q,K,V in GPU SRAM for 3x–5x faster exact attention up to 1M+ tokens", "Hybrid SSM/Mamba layers (Granite 4, Jamba, Nemotron-H) maintain constant O(1) state memory on long contexts"],
+        cons: ["Sparse MoE activates few parameters per token (fast TPOT) but requires enough total GPU VRAM to hold ALL expert weights"],
+        alternatives: "Sliding Window Attention (SWA), Ring Attention (multi-GPU sequence parallelism)"
+      },
+      {
+        id: "concept-decoding-kvcache", name: "Decoding, Sampling (Temp, Top-p, Min-p), Constrained FSM Grammar, Speculative Decoding & Paged/Radix KV-Cache", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Inference Engine Mechanics",
+        protocols: ["Speculative Decoding", "xgrammar / Outlines FSM", "PagedAttention", "RadixAttention"],
+        pattern: "Controls token selection probabilities, enforces 100% valid JSON grammar masks, verifies draft tokens in parallel, and deduplicates KV-cache blocks in GPU VRAM.",
+        bestFor: "Temp=0 + Constrained Decoding (xgrammar/strict schema) for agents/SQL; Prompt-Lookup Speculative Decoding for 2.5x faster RAG/code edits; RadixAttention for multi-turn agents.",
+        pros: ["Speculative & Prompt-Lookup Decoding speed up generation 2x–3.5x with 100% mathematically identical outputs", "Constrained FSM decoding masks invalid logits so JSON syntax never breaks", "PagedAttention eliminates 60%+ VRAM fragmentation; RadixAttention caches shared agent prefixes automatically"],
+        cons: ["Always place a 'reasoning' field BEFORE classification/decision fields in constrained JSON schemas to avoid accuracy drop"],
+        alternatives: "Prefill/Decode Disaggregation (NVIDIA Dynamo / Mooncake)"
+      },
+      {
+        id: "concept-reasoning-memory-alignment", name: "Reasoning Loops (ReAct, Plan-Execute, RLVR), Cognitive Memory (Working/Semantic/Episodic/Procedural) & Post-Training (LoRA/DPO/GRPO/AWQ)", layer: "18. Core AI Concepts & Algorithms", ecosystem: "OSS / Agnostic", license: "Open Source", licenseDetail: "Agent Cognition & Alignment Math",
+        protocols: ["ReAct / Plan-Execute", "CoALA Memory", "LoRA / QLoRA / DPO / GRPO", "FP8 / AWQ / GGUF"],
+        pattern: "Pairs test-time reasoning topologies and 4-tier cognitive memory with parameter-efficient fine-tuning, preference alignment, verifiable RL (GRPO), and weight quantization.",
+        bestFor: "Planner (Reasoning Model) → Executor (Fast SLM) split; CoALA 4-tier memory; QLoRA/DPO for style/distillation; GRPO (verifiable rewards) for SQL/code/logic SLMs; FP8/AWQ for serving.",
+        pros: ["GRPO trains 8B–32B models to self-verify code/SQL/math using deterministic unit-test rewards without human labels", "Bi-temporal Semantic Memory (Graphiti) + Episodic dynamic few-shot + Procedural SKILL.md prevent context rot", "FP8 (Hopper/Ada) and AWQ (INT4) halve GPU footprint with <1% quality loss"],
+        cons: ["Never fine-tune to inject changing corporate facts (use RAG); never let agents self-mutate global procedural memory without a PR gate"],
+        alternatives: "Code-as-Action (CodeAgent writing Python instead of sequential JSON tool calls)"
+      }
+    ];
+
+    const BLUEPRINTS = [
+      {
+        title: "1. Cloud-Agnostic & Open-Source First Blueprint",
+        badge: "Maximum Portability • Zero Lock-In",
+        persona: "Ideal for multi-cloud enterprises, regulated VPC self-hosters, and AI Platform teams avoiding single-vendor lock-in.",
+        layers: [
+          ["Protocols", "MCP (Tools) + A2A (Cross-team Agents) + AG-UI (React SSE) + OpenTelemetry GenAI"],
+          ["Gateway & Serving", "LiteLLM Proxy → Frontier APIs + Self-hosted vLLM / SGLang on Kubernetes GPUs"],
+          ["Orchestration", "LangGraph (complex stateful HITL) + PydanticAI (clean FastAPI microservices)"],
+          ["Data, RAG & Memory", "Docling → Qdrant (or PostgreSQL pgvectorscale) + BGE/Cohere Rerank + Mem0 / Graphiti + E2B Sandboxes"],
+          ["LLMOps, Evals & Safety", "Langfuse (or Arize Phoenix) + Promptfoo / DeepEval CI Gates + Lakera / Guardrails AI + Instructor"]
+        ]
+      },
+      {
+        title: "2. AWS-Native Enterprise Blueprint",
+        badge: "AWS Ecosystem • Serverless & MicroVM Scale",
+        persona: "Ideal for organizations standardized on AWS IAM, PrivateLink, Amazon Bedrock, Lambda, and ECS/EKS.",
+        layers: [
+          ["Protocols", "MCP (via Bedrock AgentCore Gateway) + A2A + Native OpenTelemetry"],
+          ["Gateway & Models", "Amazon Bedrock Cross-Region Inference (Claude, Amazon Nova, Llama) + LiteLLM/Portkey"],
+          ["Orchestration & Runtime", "AWS Strands Agents SDK deployed on Amazon Bedrock AgentCore (MicroVM session isolation)"],
+          ["Data, RAG & Memory", "Aurora PostgreSQL pgvector / OpenSearch Serverless + AgentCore Memory"],
+          ["LLMOps, Evals & Safety", "Bedrock Guardrails (Automated Reasoning Checks) + CloudWatch GenAI Observability / Langfuse + Promptfoo"]
+        ]
+      },
+      {
+        title: "3. Microsoft / Azure Enterprise Blueprint",
+        badge: "Azure & .NET/Python • M365 Synergy",
+        persona: "Ideal for C#/.NET & Python enterprises invested in Microsoft Entra ID, M365, SharePoint, Fabric, and Copilot.",
+        layers: [
+          ["Protocols", "MCP + A2A (bridging code-first Foundry agents with citizen Copilot Studio agents) + OTEL"],
+          ["Gateway & Models", "Azure AI Foundry Models + Azure API Management (APIM) AI Gateway"],
+          ["Orchestration & Runtime", "Microsoft Agent Framework 1.0 (unified Semantic Kernel + AutoGen) on Foundry Agent Service + Entra Agent ID"],
+          ["Data, RAG & Memory", "Azure AI Search (hybrid semantic reranker) + Azure Doc Intelligence + Cosmos DB / Postgres"],
+          ["LLMOps, Evals & Safety", "Azure AI Content Safety (Prompt Shields) + Foundry Observability + Microsoft PyRIT Red-Teaming"]
+        ]
+      },
+      {
+        title: "4. Google Cloud Polyglot Blueprint",
+        badge: "GCP Ecosystem • Python / Java / Go / TS",
+        persona: "Ideal for polyglot engineering orgs (Java/Go/Python), multimodal streaming apps, and BigQuery/Vertex ecosystems.",
+        layers: [
+          ["Protocols", "A2A (originated at Google) + MCP + OpenTelemetry"],
+          ["Gateway & Models", "Vertex AI Gemini Family (1M+ context & Live multimodal) + Model Garden"],
+          ["Orchestration & Runtime", "Google Agent Development Kit (ADK) deployed to Vertex AI Agent Engine + surfaced in Google Agentspace"],
+          ["Data, RAG & Memory", "AlloyDB pgvector / Vertex AI Search / BigQuery Vector + Vertex Memory Bank"],
+          ["LLMOps, Evals & Safety", "Google Model Armor + adk eval CLI & Vertex GenAI Evaluation + Cloud Trace"]
+        ]
+      },
+      {
+        title: "5. Lakehouse & Data-Gravity Blueprint (Databricks / Snowflake)",
+        badge: "Zero Data Copy • Inherited Row/Column ACLs",
+        persona: "Ideal when 90% of agent value comes from governed enterprise SQL + unstructured docs already in Unity Catalog or Snowflake.",
+        layers: [
+          ["Protocols", "MCP Server wrappers over governed SQL/Search + OTEL / MLflow Spans"],
+          ["Gateway & Models", "Databricks Mosaic AI Gateway / Snowflake Cortex LLM Functions"],
+          ["Orchestration & Runtime", "Mosaic AI Agent Framework (wrapping LangGraph/Strands/DSPy) or Snowflake Cortex Agents"],
+          ["Data, RAG & Memory", "Genie / Cortex Analyst (Semantic Text-to-SQL) + Mosaic Vector Search / Cortex Search inheriting Catalog RBAC"],
+          ["LLMOps, Evals & Safety", "MLflow 3 Tracing & Agent Judges / TruLens RAG Triad"]
+        ]
+      }
+    ];
+    let activeLayer = "ALL";
+    const compareIds = new Set();
+
+    const searchInput = document.getElementById("searchInput");
+    const ecoSelect = document.getElementById("ecoSelect");
+    const licSelect = document.getElementById("licSelect");
+    const layerPills = document.getElementById("layerPills");
+    const cardsView = document.getElementById("cardsView");
+    const tableView = document.getElementById("tableView");
+    const tableBody = document.getElementById("tableBody");
+    const blueprintsView = document.getElementById("blueprintsView");
+    const compareView = document.getElementById("compareView");
+    const compareContent = document.getElementById("compareContent");
+    const filterBar = document.getElementById("filterBar");
+    const detailDialog = document.getElementById("detailDialog");
+
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      detailDialog.addEventListener("click", (event) => {
+        if (event.target !== detailDialog) return;
+        const rect = detailDialog.getBoundingClientRect();
+        const isDialogContent = (
+          rect.top <= event.clientY &&
+          event.clientY <= rect.top + rect.height &&
+          rect.left <= event.clientX &&
+          event.clientX <= rect.left + rect.width
+        );
+        if (isDialogContent) return;
+        detailDialog.close();
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderLayerPills() {
+      layerPills.innerHTML = LAYERS.map((layer) => {
+        const cls = layer === activeLayer ? "pill active" : "pill";
+        const label = layer === "ALL" ? "All Stack Layers" : layer;
+        return `<button type="button" data-layer="${escapeHtml(layer)}" class="${cls}">${escapeHtml(label)}</button>`;
+      }).join("");
+    }
+
+    function getFilteredTools() {
+      const q = searchInput.value.trim().toLowerCase();
+      const eco = ecoSelect.value;
+      const lic = licSelect.value;
+
+      return TOOLS.filter((t) => {
+        if (activeLayer !== "ALL" && t.layer !== activeLayer) return false;
+        if (eco !== "ALL" && t.ecosystem !== eco) return false;
+        if (lic !== "ALL" && t.license !== lic) return false;
+        if (!q) return true;
+        const hay = [
+          t.name, t.layer, t.ecosystem, t.licenseDetail,
+          t.pattern, t.bestFor, t.alternatives,
+          ...(t.protocols || []), ...(t.pros || []), ...(t.cons || [])
+        ].join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function openDetail(id) {
+      const tool = TOOLS.find((t) => t.id === id);
+      if (!tool) return;
+
+      document.getElementById("dialogTitle").textContent = tool.name;
+      document.getElementById("dialogBadges").innerHTML = `
+        <span class="badge">${escapeHtml(tool.layer)}</span>
+        <span class="badge">${escapeHtml(tool.ecosystem)}</span>
+        <span class="badge">${escapeHtml(tool.licenseDetail)}</span>
+      `;
+
+      document.getElementById("dialogBody").innerHTML = `
+        <div class="box-inner">
+          <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--muted);">Architectural Pattern</div>
+          <div>${escapeHtml(tool.pattern)}</div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Primary Enterprise Sweet Spot</div>
+          <div>${escapeHtml(tool.bestFor)}</div>
+        </div>
+        <div class="pros-cons">
+          <div class="box-inner">
+            <div class="ok-txt" style="margin-bottom:0.35rem;">Strengths &amp; Pros</div>
+            <ul style="margin:0;padding-left:1.1rem;">${tool.pros.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+          </div>
+          <div class="box-inner">
+            <div class="warn-txt" style="margin-bottom:0.35rem;">Trade-offs &amp; Watchouts</div>
+            <ul style="margin:0;padding-left:1.1rem;">${tool.cons.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>
+          </div>
+        </div>
+        <div style="font-size:0.8rem;border-top:1px solid var(--border);padding-top:0.5rem;">
+          <div><strong>Protocols / Specs:</strong> ${(tool.protocols || []).map(escapeHtml).join(", ")}</div>
+          <div><strong>Key Alternatives:</strong> ${escapeHtml(tool.alternatives)}</div>
+        </div>
+      `;
+      detailDialog.showModal();
+    }
+
+    function toggleCompare(id) {
+      if (compareIds.has(id)) {
+        compareIds.delete(id);
+      } else {
+        if (compareIds.size >= 3) {
+          compareIds.delete(compareIds.values().next().value);
+        }
+        compareIds.add(id);
+      }
+      document.getElementById("compareCount").textContent = String(compareIds.size);
+      renderAll();
+    }
+
+    function renderCards(filtered) {
+      if (!filtered.length) {
+        cardsView.innerHTML = `<div class="panel" style="grid-column:1/-1;text-align:center;color:var(--muted);">No tools match your current filter criteria. Click "Reset all filters" above.</div>`;
+        return;
+      }
+      cardsView.innerHTML = filtered.map((t) => {
+        const selected = compareIds.has(t.id);
+        return `
+          <article class="card-region">
+            <div>
+              <div class="card-meta">
+                <span>${escapeHtml(t.layer)}</span>
+                <span class="badge">${escapeHtml(t.license)}</span>
+              </div>
+              <h2 class="card-title">${escapeHtml(t.name)}</h2>
+              <p class="card-desc">${escapeHtml(t.pattern)}</p>
+              <div class="card-fit"><strong>Best Fit:</strong> ${escapeHtml(t.bestFor)}</div>
+              <div class="tag-list">${(t.protocols || []).map((p) => `<span class="badge">${escapeHtml(p)}</span>`).join("")}</div>
+            </div>
+            <div class="card-actions">
+              <button type="button" data-inspect="${escapeHtml(t.id)}" class="primary-btn">Deep Dive</button>
+              <button type="button" data-compare="${escapeHtml(t.id)}" class="${selected ? "active" : ""}">${selected ? "✓ In Compare" : "+ Compare"}</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderTable(filtered) {
+      tableBody.innerHTML = filtered.map((t) => `
+        <tr>
+          <th scope="row">${escapeHtml(t.name)}</th>
+          <td>${escapeHtml(t.layer)}</td>
+          <td>${escapeHtml(t.ecosystem)}</td>
+          <td>${escapeHtml(t.licenseDetail)}</td>
+          <td>${escapeHtml(t.pattern)}</td>
+          <td>${escapeHtml(t.bestFor)}</td>
+          <td><button type="button" data-inspect="${escapeHtml(t.id)}" class="link-btn">Inspect</button></td>
+        </tr>
+      `).join("");
+    }
+
+    const SCENARIOS = [
+      ["Single-SaaS CRM/IT/Productivity Assistant (85%+ in M365, Salesforce, ServiceNow)", "BUY: M365 Copilot, Salesforce Agentforce, ServiceNow Now Assist, Workday Illuminate", "Avoid custom-rebuilding native SaaS RBAC & UI; federate custom domain tools via MCP/A2A"],
+      ["Horizontal Enterprise Search & Helpdesk across 30+ SaaS Connectors", "PARTNER: Glean, Moveworks, Google Agentspace, Writer", "Pre-built SaaS connectors & live document-level ACL sync save 6–12 months of ETL"],
+      ["Complex Stateful Workflow with Human Approvals (HITL) & Time-Travel Replay", "LangGraph (+ Postgres Checkpointer or DBOS) + CopilotKit (AG-UI)", "Explicit state machines, interrupt() pause/resume, and Pass-by-Reference artifact URIs"],
+      ["Clean Python Microservice Agent with FastAPI & Strict Type Safety", "PydanticAI, OpenAI Agents SDK, or AWS Strands", "Minimalist code-first ergonomics, dependency injection (RunContext), and trivial pytest mocking"],
+      ["Enterprise .NET / C# Backend Standardized on Azure & Entra ID", "Microsoft Agent Framework 1.0 (MAF) on Azure AI Foundry", "1:1 C# and Python parity unifying Semantic Kernel middleware with AutoGen graphs"],
+      ["Polyglot Enterprise Backend (Java / Spring Boot, Go, Python, TS)", "Google ADK on Vertex AI Agent Engine or Kubernetes", "Native first-class Java, Go, TypeScript & Python SDKs with adk web and adk eval"],
+      ["Multi-Hour / Multi-Day Async Agent Surviving Crashes & Deploys", "Temporal, DBOS, Restate, or Inngest wrapping agent steps as Activities", "Event-sourced deterministic replay + idempotency keys + compensating saga rollbacks"],
+      ["RAG Over <20M Vectors with Relational Metadata & ACID Joins", "PostgreSQL (pgvector + pgvectorscale + ParadeDB BM25)", "Zero new DB vendor; transactional consistency between operational rows/ACLs and embeddings"],
+      ["High-QPS Multi-Tenant RAG with Selective RBAC Metadata Pre-Filters", "Qdrant (or Milvus / Pinecone at 100M–10B+ scale)", "Payload-aware HNSW indexing avoids recall collapse on selective tenant/role filters"],
+      ["Massive Codebase Indexing or Low-Cost Multimodal Lake on S3/GCS", "Turbopuffer or LanceDB", "Object-storage native columnar architecture cuts vector storage cost by 10x–50x"],
+      ["Complex Financial PDFs, Scanned Tables & Engineering Schematics", "Docling (OSS local) or LlamaParse / Reducto + ColPali (Vision RAG)", "Preserves nested table hierarchy, bounding boxes, and visual diagrams where text OCR fails"],
+      ["Natural-Language Analytics (Text-to-SQL) Over Enterprise Data Warehouses", "Snowflake Cortex Analyst, Databricks Genie, Cube, or dbt Semantic Layer + sqlglot", "Binds LLM queries to governed metric definitions and AST-validated read-only SQL"],
+      ["Customer Agent Needing Evolving Long-Term Memory Without Contradictions", "Zep / Graphiti (Bi-Temporal Knowledge Graph) or Mem0", "Tracks valid_at / invalid_at timestamps so changing facts don't cause hallucinations"],
+      ["Untrusted Code Execution, Data Science Charts, or Browser Automation", "E2B (Firecracker microVMs), Daytona, Modal, or Browserbase + Stagehand", "Pre-baked sub-200ms microVM isolation prevents RCE and container escape"],
+      ["Enforcing Hard Business Rules on Agent Tool Calls (e.g., Refund Caps)", "Open Policy Agent (OPA), AWS Cedar, or Oso at the MCP Gateway", "Deterministic Policy-as-Code + OAuth 2.1 On-Behalf-Of (OBO) user tokens"],
+      ["Sub-50ms Input/Output Firewall for Prompt Injection & Streaming PII", "Lakera Guard, GLiNER / Presidio sliding-window buffer, or Bedrock Guardrails", "Blocks indirect RAG injections and redacts PII inline without stalling streaming TTFT"],
+      ["Strict Sub-300ms Latency Budget (Inline Search, Voice, Fraud Triage)", "Speculative asyncio.gather + ModernBERT / GLiNER (ONNX) + FlashRank + SGLang / Flash-Lite", "Runs guardrail, intent router & retrieval in parallel at t=0; uses 5ms encoders over 70B LLMs"],
+      ["Air-Gapped / Zero-Egress On-Prem VPC with Scarce GPUs (e.g., 2x L40S)", "LiteLLM → vLLM/SGLang (AWQ/FP8 + --enable-lora) → Docling + Qdrant + BGE-M3 → Langfuse K8s", "Pre-bundled offline weights/tokenizers + FP8 KV-cache + Multi-LoRA hot-swapping on one base model"]
+    ];
+
+    const INDUSTRIES = [
+      {
+        sector: "Financial Services, Banking & Insurance",
+        compliance: "SR 11-7 / OCC Model Risk Management, FINRA 3110/4511 (7-yr WORM archiving), PCI-DSS v4.0, SOX, EU DORA",
+        stack: "LlamaParse / Docling + voyage-finance-2 → Zero autonomous ledger writes (Python/SQL deterministic math tools) → OPA/Cedar policy gates → WORM immutable audit logs."
+      },
+      {
+        sector: "Healthcare, Payor/Provider & Life Sciences",
+        compliance: "HIPAA (BAA across every layer), HITECH, FDA 21 CFR Part 11 (pharma e-records), GxP, HL7 v2 / FHIR R4",
+        stack: "In-flight PHI de-identification (Presidio / Cloud Healthcare NLP) → Deepgram Medical ambient voice + CopilotKit clinician sign-off UI → Citation-locked RAG + Bedrock Automated Reasoning."
+      },
+      {
+        sector: "Retail, CPG & e-Commerce",
+        compliance: "PCI-DSS, GDPR/CCPA profiling opt-outs, FTC Brand Safety, Commercial IP Indemnification",
+        stack: "Sub-200ms semantic cache (Cloudflare AI GW / RedisVL) + cascade routing to Flash/Nova → Adobe Firefly (IP-indemnified catalog creative) → Promo/Pricing strictly bound to deterministic MCP APIs."
+      },
+      {
+        sector: "Manufacturing, Industrial, Energy & Supply Chain",
+        compliance: "IT/OT Purdue Model (IEC 62443), OSHA safety, ITAR / EAR export controls",
+        stack: "On-prem edge inference (vLLM / NVIDIA NIM on L40S/IGX) for air-gapped factory copilots → Vision-First RAG (ColPali + Docling) over P&ID schematics → Neo4j GraphRAG for multi-tier BoM lineage."
+      },
+      {
+        sector: "Telecom, Media & Utilities",
+        compliance: "CPNI, FCC regulations, NERC CIP (critical grid infrastructure)",
+        stack: "LiveKit Agents / Pipecat + Deepgram + Cartesia/ElevenLabs over SIP/PSTN (<500ms voice turn) → AIOps Root-Cause Agents using GraphRAG over CMDB topology + Dynatrace/Prometheus MCP."
+      },
+      {
+        sector: "Public Sector, Defense & Government",
+        compliance: "FedRAMP High / Moderate, DoD IL4/IL5/IL6, CJIS, Section 508 Accessibility, FOIA discoverability",
+        stack: "AWS Bedrock GovCloud / Azure OpenAI Gov or self-hosted Llama/Mistral on accredited K8s → Full deterministic reasoning & citation audit trails for FOIA/citizen transparency."
+      }
+    ];
+
+    const conceptsView = document.getElementById("conceptsView");
+    let activeConceptCat = "ALL";
+
+    const CONCEPT_TAXONOMY = [
+      {
+        cat: "1. Tokenization",
+        title: "1. Tokenization Algorithms & Subword Schemes",
+        summary: "Converts raw text/code into discrete vocabulary IDs (32k–256k vocab). Directly governs API token billing, effective context length, and multilingual fairness.",
+        rows: [
+          ["Byte-Level BPE (tiktoken o200k_base, Llama 3/4, Qwen, DeepSeek)", "Iteratively merges frequent UTF-8 byte/subword pairs using regex pre-tokenization.", "Zero <UNK> tokens on any UTF-8 string; strong English & code whitespace compression.", "Smaller 32k vocabs inflate token count (fertility) on non-Latin scripts; always prefer 128k–256k vocab models.", "Universal Default for frontier & open-weight generative LLMs and coding agents."],
+          ["WordPiece (BERT, DeBERTa, ModernBERT, GLiNER)", "Likelihood-scored greedy longest-match subword splitting with ## continuation prefixes.", "Fast deterministic lookup; strong morphological grouping for classification & NER.", "Can emit <UNK> on rare Unicode symbols; not used for modern autoregressive generation.", "Fast Encoder SLMs, Guardrail Classifiers, Rerankers & PII Redactors."],
+          ["Unigram LM / SentencePiece (Gemma, T5, BGE-M3, XLM-R)", "Starts with a large vocabulary and prunes tokens that least reduce corpus unigram likelihood; treats spaces as \u2581.", "Language-agnostic—excels on non-whitespace scripts (Chinese, Japanese, Thai); supports subword regularization.", "Slightly heavier Viterbi tokenization math than greedy BPE.", "Multilingual Enterprise RAG (BGE-M3) and global CJK/Indic corpora."],
+          ["Raw Byte / Dynamic Byte Patching (ByT5, Meta BLT)", "Operates directly on raw UTF-8 bytes or dynamically groups bytes into entropy-based patches.", "Immune to typos, character-level adversarial obfuscation & vocab bias.", "4x longer raw sequences unless dynamic patching (BLT) is used.", "OCR error cleanup, adversarial security scanners, and biological/chemical sequences."]
+        ]
+      },
+      {
+        cat: "2. Chunking Strategies",
+        title: "2. Document Chunking Strategies (8 Types Compared)",
+        summary: "Balances embedding precision (small focused chunks) against generation completeness (surrounding context headers, tables, and pronouns).",
+        rows: [
+          ["Fixed-Size Token Chunking (w/ Sliding Overlap)", "Splits strictly every N tokens (e.g., 512) with 10–15% overlap regardless of structure.", "Simplest O(N) speed; zero compute cost; uniform payload size.", "Severs tables from column headers, splits code functions & breaks sentences mid-thought.", "Only for unstructured plain-text logs or quick PoCs."],
+          ["Recursive Character / Delimiter Chunking", "Splits hierarchically down separators ([\\n\\n, \\n, '. ', ' ']) until fitting token budget.", "Preserves paragraph and sentence boundaries with zero model inference cost.", "Blind to Markdown/HTML section hierarchy or semantic topic shifts.", "General prose articles, emails, and support tickets (400–600 tokens)."],
+          ["Structure-Aware (Markdown / HTML / Code AST)", "Parses # H1/H2/H3, DOM tags, or Tree-sitter Code AST and prepends breadcrumb headers ([Doc > Sec 3]) to every chunk.", "Never splits a Markdown table row from its headers or a function in half; preserves structural lineage.", "Requires clean upstream layout parsing (Docling / LlamaParse / Tree-sitter).", "Enterprise Baseline for SOPs, financial tables, manuals, and codebases."],
+          ["Hierarchical / Parent-Child ('Small-to-Big')", "Indexes small Child Chunks (200–350 tokens) for vector search, linked via parent_id to larger Parent Sections (1,000–2,000 tokens) returned to the LLM.", "Best of both worlds: razor-sharp single-fact dense embedding match + full surrounding context for LLM synthesis.", "Requires storing child vectors + parent documents and deduplicating parent IDs at query time.", "#1 Production Pattern for complex enterprise manuals, policies & reports."],
+          ["Semantic Chunking (Embedding Breakpoints)", "Embeds adjacent sentence windows and splits wherever cosine distance spikes above a percentile threshold.", "Adapts boundaries dynamically to real topic shifts in unformatted text.", "Requires embedding every sentence at ingestion; threshold tuning can produce uneven fragment sizes.", "Unformatted meeting transcripts, podcasts, and long narrative streams."],
+          ["Late Chunking (Long-Context Span Pooling)", "Passes full 8k–32k document through a long-context bi-encoder (Jina v3 / BGE-M3) BEFORE mean-pooling chunk token spans.", "Resolves cross-paragraph pronouns ('the company', 'this dosage') at near-zero extra cost vs. LLM rewriting.", "Requires a long-context embedding model exposing token-level outputs; does not enrich BM25 text.", "Documents (1k–8k tokens) with heavy entity/pronoun cross-references."],
+          ["Contextual Retrieval Chunking (Anthropic Pattern)", "Uses a prompt-cached LLM at ingestion to prepend a 50–100 token document/section context summary to each chunk before Dense + BM25 indexing.", "Cuts top-20 retrieval failure rates by 49–67%; enriches BOTH lexical BM25 and dense vectors.", "Ingestion LLM token cost (reduced 80–90% via Prompt Prefix Caching).", "High-value legal contracts, clinical guidelines, and underwriting policies."],
+          ["Agentic Proposition & Vision-Patch (ColPali) Chunking", "Proposition: LLM extracts atomic self-contained facts. Vision-Patch: Embeds PDF page screenshots as 1,024 visual patches.", "Proposition maximizes fact density; ColPali skips OCR/chunking completely for complex visual layouts.", "High LLM ingestion cost (Proposition) or multi-vector RAM footprint (ColPali—use binary quantization).", "ColPali for engineering schematics, P&IDs, slide decks & scanned forms."]
+        ]
+      },
+      {
+        cat: "3. Embeddings",
+        title: "3. Embedding Paradigms & Vector Representations",
+        summary: "Maps discrete text, code, or multimodal media into geometric vector spaces. Combining Dense + Sparse + Reranking is mandatory for production accuracy.",
+        rows: [
+          ["Dense Bi-Encoder (Fixed-Dimension)", "Compresses a passage into a single vector (768–3072 dims) via mean/[CLS] pooling (voyage-3, text-embedding-3, E5).", "Fast O(1) ANN lookup; captures deep synonymy, paraphrasing & cross-lingual meaning.", "Information bottleneck blurs exact SKUs, part numbers, error codes & rare proper nouns.", "Semantic leg of every Hybrid RAG pipeline, clustering & classification."],
+          ["Sparse Lexical & Learned Sparse (BM25 / SPLADE)", "High-dim sparse vector (30k–250k dims) weighting exact terms (BM25) or learned synonym expansions (SPLADE / BGE-M3 Sparse).", "Unbeatable on exact SKUs, error codes, acronyms, function names & clause numbers.", "Classic BM25 misses conceptual paraphrases when vocabulary differs.", "Mandatory lexical partner to Dense Embeddings in Hybrid RAG."],
+          ["Matryoshka Representation Learning (MRL)", "Trains nested vector prefixes (first 64, 128, 256, 512, 1536 dims) so vectors can be truncated dynamically without retraining.", "Slicing 3072→512 dims + quantization cuts Vector DB RAM by 6x–24x while keeping ~97% recall; enables fast funnel search.", "Slight precision drop below 256 dims unless paired with full-vector rescoring or a reranker.", "Large-scale Vector DB cost reduction (10M–1B+ vectors)."],
+          ["Late-Interaction Multi-Vector (ColBERT / ColPali)", "Retains one compact vector (128d) per token or image patch; scores via MaxSim (sum of max token similarities).", "Near Cross-Encoder accuracy at pre-indexed speeds; ColPali handles visual tables/diagrams without OCR.", "10x–50x more vectors per doc; requires multi-vector DB support (Qdrant/Vespa/Milvus) + binary quantization.", "Fine-grained technical/legal search and Vision-First RAG."],
+          ["Domain & Instruction-Asymmetric Embeddings", "Tuned specifically for code ASTs, finance, or law (voyage-code-3, voyage-finance-2, voyage-law-2) with query vs. doc prefixes.", "+10–20% NDCG@10 boost over generic embeddings on codebases, SQL schemas & legal contracts.", "Must keep query prefixes and document prefixes strictly matched at runtime.", "AI coding assistants, Text-to-SQL schema linking, financial/legal RAG."],
+          ["Multimodal Cross-Modal Unified (Cohere v4 / SigLIP / TwelveLabs)", "Projects text, images, and video clips into one shared geometric space.", "Enables text-to-image and text-to-video-timestamp search in one index.", "Pure CLIP struggles on dense text inside images compared to VLM embedders (Cohere v4 / ColPali).", "Retail visual catalogs, media DAMs, and video analytics."]
+        ]
+      },
+      {
+        cat: "4. Distance & Indexing",
+        title: "4. Distance Metrics, ANN Vector Indexes & Quantization",
+        summary: "Governs how vector databases trade off Recall@10, P99 Query Latency, Write Throughput, and RAM/SSD infrastructure cost.",
+        rows: [
+          ["Cosine vs. Dot Product (IP) vs. Euclidean (L2) vs. Hamming", "Cosine normalizes by L2 norms; Dot Product multiplies coordinates directly; Hamming counts XOR bit flips on binary vectors.", "When vectors are L2-normalized (length=1), Dot Product produces the EXACT same ranking as Cosine at higher SIMD speed; Hamming is 30x faster.", "Using Dot Product on unnormalized vectors skews toward longer documents.", "Match the training metric; use Dot Product on normalized embeddings; Hamming for Binary Quantized shortlisting."],
+          ["Flat (Exact KNN) vs. IVF / IVF-PQ / SCaNN", "Flat scans 100% of vectors; IVF partitions space into K Voronoi centroid clusters and probes only nprobe nearest clusters.", "Flat gives 100% recall with zero build time; IVF uses much less RAM than HNSW on batch datasets.", "Flat is too slow above 100k vectors; IVF loses recall near cluster boundaries or when streaming inserts shift centroids.", "Flat for <50k vectors; IVF-PQ/SCaNN for static/batch datasets on tight RAM."],
+          ["HNSW (Hierarchical Navigable Small World)", "Multi-layer proximity skip-graph in RAM (tuned via M edges, ef_construction, ef_search).", "Gold standard for sub-5ms query latency and 95–99%+ recall.", "High RAM footprint (1.5x–2.5x raw vector bytes); selective metadata filters (<1% match) cause recall cliffs without payload-aware HNSW (Qdrant) or iterative_scan (pgvector).", "Default index for <20M vectors in Qdrant, pgvector, Weaviate & Milvus."],
+          ["DiskANN / StreamingDiskANN (Vamana SSD Graph)", "Compresses vectors in RAM via PQ while storing full vectors + adjacency lists on fast NVMe SSDs fetched in 1–2 hops.", "Slashes RAM cost by 75–90% while keeping 95–98% recall and 5–20ms latency.", "Requires low-latency local NVMe SSDs (never run on slow network HDDs).", "10M–500M+ vectors on pgvectorscale, Milvus DiskANN, or Azure."],
+          ["Vector Quantization: FP16 vs. SQ8 (INT8) vs. PQ vs. Binary (BQ)", "Compresses 32-bit floats to 16-bit (2x), 8-bit scalar (4x), sub-vector codebooks (PQ 16x), or 1-bit sign bits (BQ 32x).", "SQ8 (INT8) cuts RAM 4x with ~99% recall; Binary Quantization (BQ) cuts RAM 32x when paired with 4x oversampling + disk rescore.", "PQ requires codebook training; BQ loses recall on low-dim (<512d) models without rescoring.", "Enable SQ8 by default; use Binary Quantization + rescore for high-dim (1024d+) or ColPali multi-vectors."]
+        ]
+      },
+      {
+        cat: "5. Retrieval & Reranking",
+        title: "5. Query Transformation, Hybrid Fusion & Reranking Paradigms",
+        summary: "Transforms ambiguous user inputs, fuses lexical and semantic candidates, and applies deep cross-attention reranking.",
+        rows: [
+          ["Query Rewriting & Multi-Query Decomposition", "SLM de-contextualizes chat follow-ups ('What about contractors?') or decomposes compound questions into parallel sub-queries.", "Prevents pronoun/ellipsis retrieval failure in multi-turn chat and boosts multi-hop recall.", "Adds ~80–150ms SLM latency and 2x–4x vector QPS on decomposed queries.", "Mandatory for multi-turn chat RAG and comparative analytical questions."],
+          ["HyDE (Hypothetical Document Embeddings) & Step-Back", "HyDE embeds an LLM-generated hypothetical answer passage; Step-Back retrieves high-level governing principles alongside specific facts.", "Bridges query-to-document stylistic asymmetry in scientific/policy search.", "HyDE degrades retrieval if the LLM hallucinates false jargon on proprietary internal topics.", "Use Step-Back for policy/tax/engineering rules; use HyDE only on open-domain concepts."],
+          ["Reciprocal Rank Fusion (RRF) vs. Linear Alpha Blending", "RRF merges Dense + BM25 lists by rank position 1/(60 + rank); Alpha Blending normalizes and weights raw scores.", "RRF requires zero score calibration across incompatible BM25 and Cosine scales.", "RRF ignores raw confidence gaps between rank #1 and #2.", "Use RRF as the universal default before a Cross-Encoder Reranker."],
+          ["Cross-Encoder Reranker vs. FlashRank / ColBERT vs. LLM Listwise", "Cross-Encoder runs full self-attention over [Query + Chunk] pairs (Cohere Rerank 3.5, Voyage Rerank 2, BGE-Reranker).", "+15–30% NDCG@5 precision boost; catches negations ('NOT covered') and exact entity links.", "Adds 50–150ms for top-50 chunks (use FlashRank ONNX or ColBERT for <15ms CPU budgets).", "Highest-ROI upgrade in enterprise RAG."],
+          ["GraphRAG vs. LightRAG vs. RAPTOR vs. Corrective RAG (CRAG)", "GraphRAG/LightRAG extract entity-relationship graphs; RAPTOR builds hierarchical cluster summaries; CRAG loops with relevance grading.", "Solves global corpus sensemaking ('Summarize top risk themes across 5,000 audits') and multi-hop lineage.", "Full Microsoft GraphRAG is token-expensive on ingestion—prefer LightRAG or RAPTOR for lower cost.", "Use Two-Stage Hybrid RAG for 85% of apps; add LightRAG/Neo4j for multi-hop lineage & global summaries."]
+        ]
+      },
+      {
+        cat: "6. Attention & Architectures",
+        title: "6. Transformer Attention, MoE & Hybrid SSM Architectures",
+        summary: "Internal model mechanics that dictate long-context prefill latency, KV-cache VRAM scaling, and on-prem vs. cloud hardware sizing.",
+        rows: [
+          ["MHA vs. GQA (Grouped-Query) vs. MLA (Multi-head Latent)", "GQA shares K,V heads across groups of Q heads; DeepSeek MLA compresses K,V into a low-rank latent vector.", "GQA cuts KV-cache VRAM 4x–8x; MLA cuts KV-cache 80–93% while maintaining superior modeling quality.", "MLA requires specialized inference kernels (supported in vLLM / SGLang).", "Always choose GQA or MLA models for high-concurrency production serving."],
+          ["FlashAttention-2/3 & Ring Attention", "Hardware-aware GPU SRAM tiling avoiding O(N²) HBM memory reads/writes; Ring Attention shards long sequences across GPUs.", "3x–5x faster prefill and 128k–2M context windows with 100% exact attention math.", "Prefill compute FLOPs still grow quadratically O(N²) with prompt length.", "Standard in vLLM, SGLang, and TensorRT-LLM."],
+          ["Dense Transformer vs. Sparse Mixture-of-Experts (MoE)", "Dense fires 100% of weights per token; MoE routes each token to top-k experts (e.g., 671B total params, only 37B active per token).", "MoE delivers frontier reasoning at 3x–5x faster token generation (TPOT) and lower FLOPs.", "MoE still requires enough total GPU VRAM to hold ALL expert weights—Dense (32B/70B) fits much easier on 2x–4x on-prem GPUs!", "Cloud APIs / Large Clusters: MoE. Constrained On-Prem GPUs: Dense + AWQ/FP8."],
+          ["Hybrid State-Space (Mamba / SSM + Transformer)", "Interleaves O(N) linear recurrent state-space layers (zero KV-cache growth!) with periodic full-attention layers (Granite 4, Jamba, Nemotron-H).", "Near-constant memory footprint and 3x throughput on 256k+ token sequences.", "Pure SSMs without interleaved attention layers struggle on exact copy-paste needle recall.", "High-throughput long-document extraction and edge/on-prem serving."]
+        ]
+      },
+      {
+        cat: "7. Decoding & KV-Cache",
+        title: "7. Decoding, Sampling, Constrained Grammar & KV-Cache Optimization",
+        summary: "Controls token generation determinism, guarantees 100% valid JSON syntax, and accelerates inference 2x–3.5x.",
+        rows: [
+          ["Greedy (Temp=0) vs. Temperature / Top-p / Min-p Sampling", "Greedy picks argmax token; Top-p samples cumulative probability p; Min-p filters tokens below p_base × P_max.", "Temp=0 maximizes reproducibility for SQL/tools; Min-p adapts dynamically to model confidence on creative/code tasks.", "High temperature (>1.0) causes multi-step agent trajectory drift.", "Use Temp=0–0.2 for agents/SQL/JSON; Temp=0.6 + Min-p=0.05 for creative synthesis."],
+          ["Constrained / Grammar-Guided Decoding (FSM / CFG)", "Compiles JSON Schema / Regex into a Finite State Machine (xgrammar, Outlines) that masks invalid token logits to -∞.", "Guarantees 100% syntactically valid JSON/Pydantic output with <0.5ms overhead and zero retries.", "Forcing an enum decision as the very first token hurts accuracy—always put a 'reasoning' field first in schema!", "Mandatory for all structured data extraction and tool-calling pipelines."],
+          ["Speculative Decoding & Prompt-Lookup Decoding", "Fast Draft SLM (or input prompt n-gram lookup) guesses 5 tokens ahead; Target LLM verifies all 5 in one parallel pass.", "2x–3.5x faster token streaming (TPOT) with 100% mathematically identical output to the target LLM.", "Prompt-Lookup Decoding needs zero extra VRAM and shines when outputs copy spans from RAG chunks or code.", "Enable on vLLM / SGLang for RAG citations, code edits & JSON extraction."],
+          ["PagedAttention vs. RadixAttention & Disaggregated Serving", "PagedAttention stores KV cache in virtual memory blocks; RadixAttention caches prefixes in an LRU tree; Disaggregation splits Prefill & Decode nodes.", "Eliminates 60% VRAM waste; RadixAttention reuses KV cache across multi-turn agent branches; Disaggregation stops 64k prefills from stalling streaming users.", "Requires strict prompt prefix immutability (never put dynamic timestamps at top of system prompt!).", "Standardize on vLLM (--enable-prefix-caching) or SGLang."]
+        ]
+      },
+      {
+        cat: "8. Reasoning & Topologies",
+        title: "8. Reasoning Paradigms & Multi-Agent Topologies",
+        summary: "Structures how agents plan, invoke tools, critique outputs, and coordinate across specialist sub-agents.",
+        rows: [
+          ["Prompted CoT vs. Native Test-Time Compute (RLVR Thinking Models)", "Native reasoning models (Claude Thinking, o-series, DeepSeek-R1, Gemini Thinking) allocate dynamic <think> tokens trained via RLVR.", "Massive accuracy leap on complex planning, multi-file debugging, math, and policy reconciliation.", "Latency/cost trap if used on simple intents—use a Planner (Reasoning) → Executor (Fast SLM) split.", "Complex architectural planning, root-cause analysis & multi-constraint reasoning."],
+          ["ReAct Loop vs. Plan-and-Execute vs. Reflexion", "ReAct interleaves Thought→Act→Observe; Plan-and-Execute builds a DAG first then runs isolated step workers; Reflexion loops against a verifier.", "Plan-and-Execute is 3x faster/cheaper on 8+ step tasks; Reflexion excels when paired with deterministic compilers (pytest, sqlglot).", "Unbounded ReAct suffers context rot after 10 turns; LLM self-critique without a deterministic rubric adds verbosity without fixing facts.", "ReAct for 1–4 tool calls; Plan-and-Execute for deep research; Reflexion with AST/test verifiers."],
+          ["Code-as-Action (CodeAgent) vs. JSON Tool Calling", "Agent emits executable Python script calling multiple tools with loops/filtering inside a microVM sandbox (Smolagents).", "Compresses 8 sequential JSON tool round-trips into 1 LLM turn + 1 sandbox run (70% lower latency & cost).", "Requires mandatory E2B/Daytona microVM isolation and proxy hooks for human approval gates.", "Data analysis, spreadsheet/CSV processing, and multi-API aggregation."],
+          ["Multi-Agent Topologies: Map-Reduce vs. Supervisor vs. Handoff Swarm", "Map-Reduce runs parallel independent workers; Supervisor calls subagents as tools; Handoff transfers live conversation control.", "Map-Reduce has predictable max(T_i) latency; Supervisor isolates parent context; Handoff avoids middleman translation.", "Avoid deep (>2 layer) hierarchical agent trees or unconstrained chatty swarms ($0.90^5 = 59%$ reliability).", "Start with a single agent + deterministic workflow; use Supervisor or Parallel Map-Reduce when context isolation is needed."]
+        ]
+      },
+      {
+        cat: "9. Memory & Post-Training",
+        title: "9. Cognitive Memory Taxonomy & Post-Training / Alignment Spectrum",
+        summary: "Separates working, semantic, episodic, and procedural memory, and compares PEFT fine-tuning, alignment, and quantization.",
+        rows: [
+          ["4 Cognitive Memory Types: Working vs. Semantic vs. Episodic vs. Procedural", "Working = thread state; Semantic = bi-temporal facts (Zep/Mem0); Episodic = past trajectories as dynamic few-shot; Procedural = SKILL.md / prompts.", "Prevents context window bloat while allowing personalized, self-improving behavior across months.", "Unverified semantic memory causes hallucination amplification; unguarded procedural writes poison all users.", "Enforce provenance/TTL on Semantic memory and human PR gates on Procedural memory."],
+          ["LoRA / QLoRA / DoRA vs. Full Fine-Tuning (SFT)", "LoRA trains tiny low-rank adapter matrices (20–150MB) on frozen base weights (4-bit NF4 in QLoRA).", "Cuts training VRAM 70% (Unsloth) and lets vLLM hot-swap 20+ task adapters on one base GPU model in <2ms.", "Fine-tuning cannot reliably memorize changing corporate facts—always use RAG for dynamic knowledge.", "Distilling frontier teacher traces into fast 8B/14B student SLMs."],
+          ["DPO / KTO / ORPO vs. GRPO (Verifiable Reward RL)", "DPO aligns on (chosen, rejected) pairs; KTO uses binary thumbs-up/down; GRPO samples group completions scored by deterministic unit tests/verifiers.", "GRPO trains domain reasoning SLMs on SQL, code & math with zero human annotation cost; DPO/KTO learn directly from user edit diffs.", "GRPO requires a fast deterministic reward function (sandbox test runner, sqlglot, math checker).", "DPO/KTO for tone & Copilot edits; GRPO for high-accuracy SQL/code/compliance SLMs."],
+          ["Inference Quantization: FP8 vs. AWQ vs. GPTQ vs. GGUF", "FP8 uses native Hopper/Ada 8-bit floats; AWQ protects the top 1% activation-salient channels in INT4; GGUF targets CPU/Apple Silicon.", "FP8 gives 2x throughput with <0.2% loss on H100/L40S; AWQ is the best INT4 format for vLLM/SGLang when VRAM-limited.", "Naive INT4 without activation awareness degrades coding and strict schema following.", "Datacenter GPU: FP8 first, AWQ for 4-bit VRAM fit. Laptop/Edge: GGUF."]
+        ]
+      }
+    ];
+
+    function renderConcepts() {
+      const cats = ["ALL", ...CONCEPT_TAXONOMY.map((c) => c.cat)];
+      const visible = activeConceptCat === "ALL"
+        ? CONCEPT_TAXONOMY
+        : CONCEPT_TAXONOMY.filter((c) => c.cat === activeConceptCat);
+
+      conceptsView.innerHTML = `
+        <section class="panel">
+          <div class="header-top" style="margin-bottom:0.65rem;">
+            <div>
+              <span class="badge">Algorithmic Deep-Dive</span>
+              <h2 style="margin:0.35rem 0 0.15rem;font-size:1.15rem;">Core AI &amp; Agentic Concepts Taxonomy (Sub-Types, Pros/Cons &amp; Selection Guide)</h2>
+              <p class="sub">Compare every algorithmic sub-type across Tokenization, Chunking, Embeddings, Vector Indexing, Retrieval, Attention, Decoding, Reasoning, Memory &amp; Alignment.</p>
+            </div>
+          </div>
+          <div class="pills" role="group" aria-label="Filter concept categories">
+            ${cats.map((c) => `
+              <button type="button" data-concept-cat="${escapeHtml(c)}" class="pill ${c === activeConceptCat ? "active" : ""}">
+                ${escapeHtml(c === "ALL" ? "All 9 Concept Domains" : c)}
+              </button>
+            `).join("")}
+          </div>
+        </section>
+        ${visible.map((group, idx) => `
+          <article class="panel">
+            <span class="badge">${escapeHtml(group.cat)}</span>
+            <h3 style="margin:0.4rem 0 0.2rem;font-size:1.08rem;">${escapeHtml(group.title)}</h3>
+            <p class="sub" style="margin-bottom:0.8rem;">${escapeHtml(group.summary)}</p>
+            <div tabindex="0" role="region" aria-labelledby="concept-cap-${idx}" class="table-wrapper">
+              <table class="matrix-table" style="--label-2:'How It Works';--label-3:'Advantages (Pros)';--label-4:'Trade-offs (Cons)';--label-5:'When to Use';">
+                <caption id="concept-cap-${idx}" class="sr-only">${escapeHtml(group.title)}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Sub-Type / Variant</th>
+                    <th scope="col">How It Works (Mechanism)</th>
+                    <th scope="col">Advantages Over Other Types</th>
+                    <th scope="col">Disadvantages / Watchouts</th>
+                    <th scope="col">Best-Fit Architectural Scenario</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${group.rows.map(([name, mech, pros, cons, fit]) => `
+                    <tr>
+                      <th scope="row">${escapeHtml(name)}</th>
+                      <td>${escapeHtml(mech)}</td>
+                      <td>${escapeHtml(pros)}</td>
+                      <td>${escapeHtml(cons)}</td>
+                      <td><strong>${escapeHtml(fit)}</strong></td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </article>
+        `).join("")}
+      `;
+    }
+
+    const scenariosView = document.getElementById("scenariosView");
+
+    function renderScenarios() {
+      scenariosView.innerHTML = `
+        <article class="panel">
+          <span class="badge">Scenario → Technology Lookup</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">Master Scenario-to-Technology Decision Handbook</h2>
+          <p class="sub" style="margin-bottom:0.85rem;">Use this lookup table during architecture reviews to map concrete business and engineering scenarios to the recommended technology options and patterns.</p>
+          <div tabindex="0" role="region" aria-labelledby="scenario-caption" class="table-wrapper">
+            <table class="matrix-table" style="--label-2:'Recommended Technologies';--label-3:'Key Architectural Pattern';">
+              <caption id="scenario-caption" class="sr-only">Scenario to Technology Mapping Table</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Architectural Scenario / Requirement</th>
+                  <th scope="col">Recommended Technology Options</th>
+                  <th scope="col">Why / Key Pattern to Apply</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${SCENARIOS.map(([scen, tech, why]) => `
+                  <tr>
+                    <th scope="row">${escapeHtml(scen)}</th>
+                    <td><strong>${escapeHtml(tech)}</strong></td>
+                    <td>${escapeHtml(why)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </article>
+        <div class="blueprints-grid">
+          ${INDUSTRIES.map((ind) => `
+            <article class="panel">
+              <span class="badge">Industry Playbook</span>
+              <h3 style="margin:0.5rem 0 0.35rem;font-size:1.05rem;">${escapeHtml(ind.sector)}</h3>
+              <div class="bp-row">
+                <strong style="color:var(--muted);">Compliance &amp; Data</strong>
+                <span>${escapeHtml(ind.compliance)}</span>
+              </div>
+              <div class="bp-row">
+                <strong style="color:var(--muted);">Recommended Stack</strong>
+                <span>${escapeHtml(ind.stack)}</span>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderBlueprints() {
+      blueprintsView.innerHTML = BLUEPRINTS.map((b) => `
+        <article class="panel">
+          <span class="badge">${escapeHtml(b.badge)}</span>
+          <h3 style="margin:0.5rem 0 0.25rem;font-size:1.05rem;">${escapeHtml(b.title)}</h3>
+          <p class="sub" style="margin-bottom:0.75rem;">${escapeHtml(b.persona)}</p>
+          ${b.layers.map(([k, v]) => `
+            <div class="bp-row">
+              <strong style="color:var(--muted);">${escapeHtml(k)}</strong>
+              <span>${escapeHtml(v)}</span>
+            </div>
+          `).join("")}
+        </article>
+      `).join("");
+    }
+
+    function renderCompare() {
+      const items = Array.from(compareIds).map((id) => TOOLS.find((t) => t.id === id)).filter(Boolean);
+      if (!items.length) {
+        compareContent.innerHTML = `<p class="sub" style="text-align:center;padding:1.5rem 0;">Select up to 3 tools using "+ Compare" on any card to evaluate pros, cons, licensing, and patterns side-by-side.</p>`;
+        return;
+      }
+      compareContent.innerHTML = `
+        <div class="compare-grid">
+          ${items.map((t) => `
+            <div class="box-inner" style="display:flex;flex-direction:column;gap:0.5rem;">
+              <div class="header-top">
+                <div>
+                  <div style="font-size:0.75rem;color:var(--muted);">${escapeHtml(t.layer)}</div>
+                  <strong>${escapeHtml(t.name)}</strong>
+                </div>
+                <button type="button" data-compare="${escapeHtml(t.id)}" class="link-btn">Remove</button>
+              </div>
+              <div><strong>License:</strong> ${escapeHtml(t.licenseDetail)}</div>
+              <div><strong>Ecosystem:</strong> ${escapeHtml(t.ecosystem)}</div>
+              <div><strong>Pattern:</strong> ${escapeHtml(t.pattern)}</div>
+              <div><strong>Sweet Spot:</strong> ${escapeHtml(t.bestFor)}</div>
+              <div><div class="ok-txt">Pros</div><ul style="margin:0.2rem 0 0;padding-left:1.1rem;">${t.pros.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul></div>
+              <div><div class="warn-txt">Watchouts</div><ul style="margin:0.2rem 0 0;padding-left:1.1rem;">${t.cons.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul></div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function setView(view) {
+      document.querySelectorAll(".view-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.view === view);
+      });
+      cardsView.classList.toggle("hidden", view !== "cards");
+      tableView.classList.toggle("hidden", view !== "table");
+      conceptsView.classList.toggle("hidden", view !== "concepts");
+      scenariosView.classList.toggle("hidden", view !== "scenarios");
+      blueprintsView.classList.toggle("hidden", view !== "blueprints");
+      compareView.classList.toggle("hidden", view !== "compare");
+      filterBar.classList.toggle("hidden", view === "concepts" || view === "scenarios" || view === "blueprints" || view === "compare");
+    }
+
+    function renderAll() {
+      const filtered = getFilteredTools();
+      document.getElementById("statTotal").textContent = String(TOOLS.length);
+      document.getElementById("statShowing").textContent = String(filtered.length);
+      renderLayerPills();
+      renderCards(filtered);
+      renderTable(filtered);
+      renderCompare();
+    }
+
+    document.addEventListener("click", (e) => {
+      const viewBtn = e.target.closest("[data-view]");
+      if (viewBtn) { setView(viewBtn.dataset.view); return; }
+      const conceptCatBtn = e.target.closest("[data-concept-cat]");
+      if (conceptCatBtn) { activeConceptCat = conceptCatBtn.dataset.conceptCat; renderConcepts(); return; }
+      const layerBtn = e.target.closest("[data-layer]");
+      if (layerBtn) { activeLayer = layerBtn.dataset.layer; renderAll(); return; }
+      const inspectBtn = e.target.closest("[data-inspect]");
+      if (inspectBtn) { openDetail(inspectBtn.dataset.inspect); return; }
+      const compareBtn = e.target.closest("[data-compare]");
+      if (compareBtn) { toggleCompare(compareBtn.dataset.compare); }
+    });
+
+    searchInput.addEventListener("input", renderAll);
+    ecoSelect.addEventListener("change", renderAll);
+    licSelect.addEventListener("change", renderAll);
+
+    document.getElementById("resetFiltersBtn").addEventListener("click", () => {
+      activeLayer = "ALL";
+      activeConceptCat = "ALL";
+      searchInput.value = "";
+      ecoSelect.value = "ALL";
+      licSelect.value = "ALL";
+      setView("cards");
+      renderConcepts();
+      renderAll();
+    });
+
+    document.getElementById("clearCompareBtn").addEventListener("click", () => {
+      compareIds.clear();
+      document.getElementById("compareCount").textContent = "0";
+      renderAll();
+    });
+
+    renderConcepts();
+    renderScenarios();
+    renderBlueprints();
+    renderAll();
+  </script>
+</body>
+</html>
