@@ -201,6 +201,15 @@
     .box-inner { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.82rem; }
     .ok-txt { color: var(--ok); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
     .warn-txt { color: var(--warn); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+
+    .arch-diagram { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+    .arch-plane { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--brand); border-radius: 10px; padding: 0.75rem 0.9rem; }
+    .arch-plane-hdr { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.82rem; font-weight: 700; }
+    .arch-nodes { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.55rem; }
+    .arch-node { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.7rem; font-size: 0.78rem; }
+    .arch-node strong { display: block; font-size: 0.82rem; margin-bottom: 0.15rem; color: var(--text); }
+    .arch-hop { text-align: center; font-size: 0.75rem; font-weight: 600; color: var(--brand); padding: 0.1rem 0; }
+    .formula-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.85rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.8rem; overflow-x: auto; }
   </style>
 </head>
 <body>
@@ -223,6 +232,7 @@
           <button type="button" data-view="cards" class="view-btn active">Explorer Cards</button>
           <button type="button" data-view="table" class="view-btn">Decision Matrix Table</button>
           <button type="button" data-view="concepts" class="view-btn">Core Concepts &amp; Sub-Types (9)</button>
+          <button type="button" data-view="playbooks" class="view-btn">Diagrams &amp; Playbooks</button>
           <button type="button" data-view="scenarios" class="view-btn">Scenario &amp; Industry Handbook</button>
           <button type="button" data-view="blueprints" class="view-btn">Reference Stack Blueprints (5)</button>
           <button type="button" data-view="compare" class="view-btn">Compare Selected (<span id="compareCount">0</span>/3)</button>
@@ -285,6 +295,8 @@
     </section>
 
     <section id="conceptsView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
+
+    <section id="playbooksView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
 
     <section id="scenariosView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
 
@@ -1384,6 +1396,179 @@
       `;
     }
 
+    const playbooksView = document.getElementById("playbooksView");
+
+    function renderPlaybooks() {
+      playbooksView.innerHTML = `
+        <article class="panel">
+          <span class="badge">Diagram 1 • Enterprise Stack Topology</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">6-Plane Enterprise Reference Architecture &amp; Protocol Boundaries</h2>
+          <p class="sub">Every box and arrow adds 30–400ms of serialization/network/auth overhead. Standardize on boundary protocols (MCP, A2A, AG-UI, OTEL) so individual frameworks and models remain swappable.</p>
+          <div class="arch-diagram">
+            <div class="arch-plane">
+              <div class="arch-plane-hdr"><span>1. User &amp; Developer Surfaces</span><span class="badge">Boundary: AG-UI / SSE + OIDC User JWT</span></div>
+              <div class="arch-nodes">
+                <div class="arch-node"><strong>Copilot / Chat / Generative UI</strong>Vercel AI SDK, CopilotKit (AG-UI), Chainlit, React Server Components</div>
+                <div class="arch-node"><strong>Agentic IDEs &amp; CLI Agents</strong>Cursor, Antigravity, AWS Kiro, Claude Code, Codex CLI, Copilot, Cline</div>
+                <div class="arch-node"><strong>Autonomous Cloud SWEs</strong>Devin, OpenAI Codex Cloud, GitHub Copilot Coding Agent, OpenHands</div>
+              </div>
+            </div>
+            <div class="arch-hop">▼ AG-UI / SSE Stream + OAuth 2.1 User Bearer Token (Propagate AbortSignal on UI disconnect) ▼</div>
+            <div class="arch-plane">
+              <div class="arch-plane-hdr"><span>2. Ingress Security, Zero-Trust Identity &amp; Policy Plane</span><span class="badge">Boundary: OAuth 2.1 OBO + OPA/Cedar</span></div>
+              <div class="arch-nodes">
+                <div class="arch-node"><strong>Zero-Trust Identity &amp; Delegation</strong>OAuth 2.1 On-Behalf-Of (OBO), Entra Agent ID, Bedrock AgentCore Identity, SPIFFE</div>
+                <div class="arch-node"><strong>Deterministic Policy Engine</strong>Open Policy Agent (OPA / Rego), AWS Cedar, Oso, SpiceDB / OpenFGA (Zanzibar ReBAC)</div>
+                <div class="arch-node"><strong>Sliding-Window Stream Guardrails</strong>Lakera Guard (&lt;50ms), GLiNER / Presidio (&lt;15ms PII), Bedrock Guardrails (Automated Reasoning), NeMo</div>
+              </div>
+            </div>
+            <div class="arch-hop">▼ Validated Intent + Scoped OBO Claims ↔ A2A Protocol (Enforce x-agent-hop-budget ≤ 4 &amp; Dollar TTL) ▼</div>
+            <div class="arch-plane">
+              <div class="arch-plane-hdr"><span>3. Agentic Orchestration, Durable Sagas, Memory &amp; Sandboxes</span><span class="badge">Boundary: Pass-by-Ref artifact:// URI</span></div>
+              <div class="arch-nodes">
+                <div class="arch-node"><strong>Agent Orchestration Frameworks</strong>LangGraph, AWS Strands, Microsoft Agent Framework 1.0, Google ADK, OpenAI SDK, PydanticAI</div>
+                <div class="arch-node"><strong>Durable Execution &amp; Sagas</strong>Temporal, DBOS (Postgres-native), Restate, Inngest + Compensating Rollback Activities</div>
+                <div class="arch-node"><strong>4-Tier Cognitive Memory</strong>Working (Postgres/Redis) • Semantic (Zep Graphiti / Mem0) • Episodic • Procedural (SKILL.md)</div>
+                <div class="arch-node"><strong>Isolated Code &amp; Browser Runtimes</strong>E2B (Pre-baked Firecracker microVMs), Daytona, Modal, Browserbase + Stagehand, AgentCore</div>
+              </div>
+            </div>
+            <div class="arch-hop">▼ MCP (Scoped OBO Token + Idempotency Key + ≤4KB Paginated Output) &amp; Hybrid ACL Pre-Filtered Queries ▼</div>
+            <div class="arch-plane">
+              <div class="arch-plane-hdr"><span>4. Context, Enterprise MCP Registry, Semantic SQL &amp; Vector/Graph Storage</span><span class="badge">Boundary: MCP + CDC Tombstoning (&lt;5m SLA)</span></div>
+              <div class="arch-nodes">
+                <div class="arch-node"><strong>Enterprise MCP Gateway &amp; Legacy Facades</strong>Version-pinned MCP Registry, Anti-Corruption SOAP/Mainframe Facades, CDC Read-Replicas</div>
+                <div class="arch-node"><strong>Governed Semantic SQL Layer</strong>Cube, dbt Semantic Layer, Snowflake Cortex Analyst, Databricks Genie + sqlglot AST Gate</div>
+                <div class="arch-node"><strong>Layout Parsing &amp; Chunking</strong>Docling, LlamaParse, Reducto → Structure-Aware Parent-Child / Contextual / Late Chunking</div>
+                <div class="arch-node"><strong>Vector, Hybrid &amp; Graph Stores</strong>Postgres pgvectorscale, Qdrant, Milvus, Pinecone, LanceDB, Turbopuffer, Neo4j + Cohere/BGE Rerank</div>
+              </div>
+            </div>
+            <div class="arch-hop">▼ OpenAI-Compatible Responses API (Static Cached Prefix First • P0/P1/P2 Token Priority Queue) ▼</div>
+            <div class="arch-plane">
+              <div class="arch-plane-hdr"><span>5. AI Gateway, FinOps Capacity Router &amp; Model Inference Fleet</span><span class="badge">Boundary: Same-Model-Family Regional Failover</span></div>
+              <div class="arch-nodes">
+                <div class="arch-node"><strong>AI Gateway &amp; FinOps Control Plane</strong>LiteLLM, Portkey, Kong / Envoy AI GW • Virtual Keys, 4-Tier Caching, P0/P1/P2 Quota Shedding</div>
+                <div class="arch-node"><strong>Frontier Managed APIs (PTU + PAYG Spillover)</strong>Claude (Opus/Sonnet/Haiku), GPT-5/o-series, Gemini Pro/Flash via Bedrock, Azure Foundry &amp; Vertex</div>
+                <div class="arch-node"><strong>Self-Hosted GPU &amp; Fast Encoder Fleet</strong>vLLM (PagedAttention + Multi-LoRA), SGLang (RadixAttention + xgrammar), Dynamo/Mooncake, ModernBERT</div>
+              </div>
+            </div>
+            <div class="arch-hop">▼ Async OpenTelemetry GenAI Spans (Scrubbed by VPC OTEL Collector PII Processor Before Export) ▼</div>
+            <div class="arch-plane">
+              <div class="arch-plane-hdr"><span>6. Cross-Cutting LLMOps, Two-Tier CI Evals (`pass^k`) &amp; Governance</span><span class="badge">Boundary: OpenTelemetry GenAI + ISO 42001</span></div>
+              <div class="arch-nodes">
+                <div class="arch-node"><strong>Observability &amp; Prompt Registry</strong>Langfuse (Self-Host MIT), Arize Phoenix (OTEL), LangSmith, Braintrust, MLflow 3, Datadog/Dynatrace</div>
+                <div class="arch-node"><strong>Two-Tier CI Evals &amp; Red-Teaming</strong>Tier-0 Deterministic Pytest (&lt;30s) + Tier-1 Calibrated Judges (Promptfoo, DeepEval, Ragas, PyRIT, Garak)</div>
+                <div class="arch-node"><strong>Governance &amp; Regulatory Compliance</strong>NIST AI RMF 1.0, ISO/IEC 42001, EU AI Act, SR 11-7 Banking MRM, WORM Audit Logs, ZDR Contracts</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="blueprints-grid">
+          <article class="panel">
+            <span class="badge">Diagram 2 • Zero-Trust Agent Security Sequence</span>
+            <h3 style="margin:0.4rem 0 0.25rem;font-size:1.05rem;">OAuth 2.1 On-Behalf-Of (OBO) + OPA/Cedar Policy + HITL Interrupt Flow</h3>
+            <p class="sub" style="margin-bottom:0.65rem;">Never rely on a system prompt to enforce authorization rules (e.g., "No refunds &gt; $250"). Enforce policy deterministically at the MCP Gateway:</p>
+            <div class="bp-row"><strong>1. User Auth</strong><span>User authenticates via Okta/Entra (OIDC) → UI sends Prompt + User JWT Bearer Token over AG-UI.</span></div>
+            <div class="bp-row"><strong>2. ACL Pre-Filter</strong><span>Orchestrator queries Vector DB with mandatory metadata filter <code>allowed_groups ∩ user_claims</code> (or SpiceDB ReBAC) BEFORE ranking.</span></div>
+            <div class="bp-row"><strong>3. Policy Check</strong><span>Agent proposes tool call → <strong>OPA / AWS Cedar</strong> evaluates <code>(user_claims, tool_name, args, blast_radius)</code> deterministically.</span></div>
+            <div class="bp-row"><strong>4A. Low Risk (Allow)</strong><span>Policy mints short-lived <strong>OAuth 2.1 OBO Token</strong> scoped to <code>User ∩ Agent</code> permissions → executes MCP tool with deterministic <code>idempotency_key</code>.</span></div>
+            <div class="bp-row"><strong>4B. High Risk (HITL)</strong><span>Refund &gt; $250 or Prod Change → Policy returns <code>REQUIRE_HITL_APPROVAL</code> → LangGraph/Temporal pauses state &amp; streams AG-UI approval card to human MFA reviewer.</span></div>
+          </article>
+
+          <article class="panel">
+            <span class="badge">Diagram 3 • Production Hybrid RAG Pipeline</span>
+            <h3 style="margin:0.4rem 0 0.25rem;font-size:1.05rem;">End-to-End Ingestion, Chunking, RRF Fusion &amp; Cross-Encoder Reranking</h3>
+            <p class="sub" style="margin-bottom:0.65rem;">80% of RAG hallucinations come from broken PDF table parsing, naive fixed-size chunking, or missing lexical + reranker stages:</p>
+            <div class="bp-row"><strong>1. Layout Parse</strong><span><strong>Docling (MIT) / LlamaParse</strong> extracts multi-column PDFs and nested tables into clean hierarchical Markdown with bounding boxes.</span></div>
+            <div class="bp-row"><strong>2. Smart Chunking</strong><span><strong>Structure-Aware + Parent-Child</strong> (256-tok child vectors linked to 1,500-tok parent sections) or <strong>Anthropic Contextual Retrieval</strong> prefixing.</span></div>
+            <div class="bp-row"><strong>3. Query Rewrite</strong><span>Fast SLM de-contextualizes conversational follow-ups (resolving pronouns) or decomposes multi-part queries.</span></div>
+            <div class="bp-row"><strong>4. Hybrid + RRF</strong><span>Parallel <strong>Dense Vector (Top-50)</strong> + <strong>BM25/SPLADE Lexical (Top-50)</strong> + ACL Pre-Filter merged via <strong>Reciprocal Rank Fusion (RRF, k=60)</strong>.</span></div>
+            <div class="bp-row"><strong>5. Rerank → Cite</strong><span><strong>Cross-Encoder Reranker</strong> (Cohere Rerank 3.5 / BGE-Reranker) scores Top-40 → passes Top-8 parent sections to LLM with citation anchors.</span></div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <span class="badge">Architect's Math &amp; Sizing Formulas</span>
+          <h3 style="margin:0.4rem 0 0.5rem;font-size:1.08rem;">Production Unit Economics, Reliability (`pass^k`), Latency &amp; Vector RAM Math</h3>
+          <div class="blueprints-grid">
+            <div class="box-inner">
+              <div class="ok-txt" style="margin-bottom:0.3rem;">1. Cost Per Resolved Task (True North FinOps Metric)</div>
+              <div class="formula-box">Cost/Task = [ Σ(LLM_In + LLM_Out + Guardrail + Rerank + Judge) × (1 + Retry_Rate) ] / Autonomous_Resolution_Rate(%)</div>
+              <p class="sub" style="margin-top:0.4rem;">Token spend is &lt;25% of total TCO. Combine <strong>Prompt Prefix Caching (50–90% off)</strong> + <strong>Exact/Semantic Redis Cache</strong> + <strong>SLM Cascade Routing</strong>.</p>
+            </div>
+            <div class="box-inner">
+              <div class="warn-txt" style="margin-bottom:0.3rem;">2. Agent Consistency Math: pass@k vs. pass^k</div>
+              <div class="formula-box">pass@k = 1 - (1 - p)^k  (At least 1 of k succeeds)<br/>pass^k = p^k            (ALL k trials succeed consistently)</div>
+              <p class="sub" style="margin-top:0.4rem;">An agent with 80% single-run accuracy has only <strong>0.80^5 = 32.7% pass^5 consistency</strong>! Gate enterprise automation on <code>pass^3</code> or <code>pass^5</code>.</p>
+            </div>
+            <div class="box-inner">
+              <div class="ok-txt" style="margin-bottom:0.3rem;">3. End-to-End Streaming Latency Budget</div>
+              <div class="formula-box">T_total = max(T_Guardrail, T_Intent, T_Retrieve) + T_Rerank + TTFT_Model + (Out_Tokens / TPS) + Σ T_Seq_Tools</div>
+              <p class="sub" style="margin-top:0.4rem;">Fire Guardrail + Intent Router + Retrieval concurrently via <code>asyncio.gather</code> at <code>t=0</code> to save 200–500ms on every turn.</p>
+            </div>
+            <div class="box-inner">
+              <div class="warn-txt" style="margin-bottom:0.3rem;">4. Vector RAM Sizing (Per 10M 1536-dim Vectors)</div>
+              <div class="formula-box">FP32: 61.4 GB | FP16: 30.7 GB | SQ8 (INT8): 15.4 GB (4x)<br/>PQ / Binary Quantization (1-bit): ~1.9 GB (32x savings!)</div>
+              <p class="sub" style="margin-top:0.4rem;">Multiply by <code>1.5x–2.2x</code> for HNSW graph edges in RAM, or use <strong>StreamingDiskANN / SQ8 / Matryoshka 512d truncation</strong>.</p>
+            </div>
+          </div>
+        </article>
+
+        <div class="blueprints-grid">
+          <article class="panel">
+            <span class="badge">Playbook 1 • Context Engineering</span>
+            <h3 style="margin:0.4rem 0 0.35rem;font-size:1.05rem;">4 Rules of Context Hygiene (Preventing Context Rot &amp; Cache Misses)</h3>
+            <div class="bp-row"><strong>1. Prefix Immutability</strong><span>Keep <code>System Prompt + Tool Schemas + Few-Shot Examples</code> 100% static at the top of the prompt. Never inject dynamic timestamps or per-turn RAG chunks at the top (destroys 100% of KV Prefix Caching).</span></div>
+            <div class="bp-row"><strong>2. Pointer Offloading</strong><span>Never keep 50KB raw JSON tool outputs in message history across turns. Store payloads in S3/Redis (`artifact://run_9/tool_2`) and keep a 2-line summary in state.</span></div>
+            <div class="bp-row"><strong>3. Trajectory Surgery</strong><span>When a tool call fails on a transient timeout/schema typo and succeeds on retry, strip the failed attempt from history so the LLM doesn't self-condition on errors.</span></div>
+            <div class="bp-row"><strong>4. Sub-Agent Isolation</strong><span>Delegate noisy multi-file searches to a stateless sub-agent with a fresh context window that burns 40k tokens and returns only a 500-token synthesis.</span></div>
+          </article>
+
+          <article class="panel">
+            <span class="badge">Playbook 2 • Rollout &amp; Resilience</span>
+            <h3 style="margin:0.4rem 0 0.35rem;font-size:1.05rem;">4-Stage Autonomy Ladder &amp; 4-Tier Multi-Region Degradation</h3>
+            <div class="bp-row"><strong>Stage 1: Shadow (0%)</strong><span>Agent runs silently on live events, logging proposed tool calls to Langfuse/Phoenix for offline comparison against human actions.</span></div>
+            <div class="bp-row"><strong>Stage 2: Copilot Draft</strong><span>Agent drafts responses/PRs/forms; human clicks Approve/Edit (capturing edit diffs as DPO preference pairs).</span></div>
+            <div class="bp-row"><strong>Stage 3: Bounded (OPA)</strong><span>Low-risk actions (&lt;$50 refund) run autonomously; high-risk actions trigger AG-UI/Slack MFA human interrupt.</span></div>
+            <div class="bp-row"><strong>Stage 4: Audited Auto</strong><span>Full execution with 5% online LLM-judge sampling + instant circuit-breaker kill switches.</span></div>
+            <div class="bp-row"><strong>Failover Rule #1</strong><span>Always fail over across regions/clouds of the <strong>EXACT SAME model family first</strong> (Bedrock us-east-1 Claude → us-west-2 Claude → Vertex Claude) before crossing model families.</span></div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <span class="badge">Playbook 3 • Design Review Gatekeeper</span>
+          <h3 style="margin:0.4rem 0 0.5rem;font-size:1.08rem;">"Never Confuse X with Y" &amp; The 10 Architectural Anti-Patterns to Block</h3>
+          <div class="pros-cons">
+            <div class="box-inner">
+              <div class="ok-txt" style="margin-bottom:0.4rem;">Crucial Architectural Distinctions ("Never Confuse...")</div>
+              <ul style="margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:0.35rem;">
+                <li><strong>Workflow vs. Agent:</strong> Workflows follow deterministic code edges; Agents let the LLM dynamically choose tools/loops. <em>Best pattern: deterministic workflow wrapping bounded agent nodes.</em></li>
+                <li><strong>RAG vs. Memory vs. Fine-Tuning:</strong> RAG grounds answers in external facts; Memory persists user/session state across turns; Fine-Tuning adapts style, schema formatting, or compact task skill.</li>
+                <li><strong>MCP vs. A2A vs. AG-UI:</strong> MCP connects Agent ↔ Tools/Data; A2A connects Agent ↔ Peer Agent; AG-UI streams Agent ↔ Frontend UI.</li>
+                <li><strong>Frameworks vs. Managed Runtimes:</strong> Strands/LangGraph/ADK (code orchestration libraries) vs. AgentCore/Agent Engine (serverless microVM compute, IAM &amp; memory hosting any framework).</li>
+                <li><strong>Guardrails vs. Authorization:</strong> Guardrails are probabilistic classifiers; Authorization (OAuth OBO, OPA/Cedar, ACL pre-filters) is deterministic access control.</li>
+              </ul>
+            </div>
+            <div class="box-inner">
+              <div class="warn-txt" style="margin-bottom:0.4rem;">10 Anti-Patterns to Block in Architecture Reviews</div>
+              <ol style="margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.25rem;">
+                <li>Autonomous multi-agent swarms where a deterministic workflow suffices (0.90^5 = 59% reliability).</li>
+                <li>Direct vendor SDK calls bypassing an AI Gateway (LiteLLM/Portkey) &amp; OpenTelemetry.</li>
+                <li>Pure dense vector RAG without BM25 lexical search + Cross-Encoder Reranker + ACL Pre-Filtering.</li>
+                <li>Attaching 50+ MCP tools or returning 250KB raw JSON payloads into the context window.</li>
+                <li>Injecting dynamic timestamps or RAG chunks at the top of the system prompt (breaks KV prefix cache).</li>
+                <li>Failing over mid-agent-loop across different model families without prompt/schema adaptation.</li>
+                <li>Pointing raw Text-to-SQL at 500+ ERP tables without a Semantic Layer (Cube/dbt/Genie) &amp; sqlglot AST check.</li>
+                <li>Storing multi-megabyte blobs inside LangGraph/Postgres checkpointer state instead of artifact:// URIs.</li>
+                <li>God-mode shared service accounts instead of OAuth 2.1 OBO user tokens, OPA/Cedar policy &amp; idempotency keys.</li>
+                <li>Unsandboxed code execution, unscrubbed PII in OTEL traces, or shipping without a Two-Tier CI Eval Gate.</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
     function setView(view) {
       document.querySelectorAll(".view-btn").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.view === view);
@@ -1391,10 +1576,11 @@
       cardsView.classList.toggle("hidden", view !== "cards");
       tableView.classList.toggle("hidden", view !== "table");
       conceptsView.classList.toggle("hidden", view !== "concepts");
+      playbooksView.classList.toggle("hidden", view !== "playbooks");
       scenariosView.classList.toggle("hidden", view !== "scenarios");
       blueprintsView.classList.toggle("hidden", view !== "blueprints");
       compareView.classList.toggle("hidden", view !== "compare");
-      filterBar.classList.toggle("hidden", view === "concepts" || view === "scenarios" || view === "blueprints" || view === "compare");
+      filterBar.classList.toggle("hidden", view === "concepts" || view === "playbooks" || view === "scenarios" || view === "blueprints" || view === "compare");
     }
 
     function renderAll() {
@@ -1442,6 +1628,7 @@
     });
 
     renderConcepts();
+    renderPlaybooks();
     renderScenarios();
     renderBlueprints();
     renderAll();
