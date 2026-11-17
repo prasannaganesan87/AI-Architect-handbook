@@ -108,7 +108,7 @@
 
     .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
     label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 0.25rem; }
-    input[type="search"], select {
+    input[type="search"], input[type="number"], select {
       width: 100%;
       padding: 0.5rem 0.7rem;
       font: inherit;
@@ -230,12 +230,15 @@
       <div class="nav-row">
         <div class="tabs" role="group" aria-label="Dashboard views">
           <button type="button" data-view="cards" class="view-btn active">Explorer Cards</button>
-          <button type="button" data-view="table" class="view-btn">Decision Matrix Table</button>
-          <button type="button" data-view="concepts" class="view-btn">Core Concepts &amp; Sub-Types (9)</button>
+          <button type="button" data-view="table" class="view-btn">Decision Matrix</button>
+          <button type="button" data-view="concepts" class="view-btn">Core Concepts (9)</button>
           <button type="button" data-view="playbooks" class="view-btn">Diagrams &amp; Playbooks</button>
-          <button type="button" data-view="scenarios" class="view-btn">Scenario &amp; Industry Handbook</button>
-          <button type="button" data-view="blueprints" class="view-btn">Reference Stack Blueprints (5)</button>
-          <button type="button" data-view="compare" class="view-btn">Compare Selected (<span id="compareCount">0</span>/3)</button>
+          <button type="button" data-view="wizard" class="view-btn">Stack Wizard &amp; Calculators</button>
+          <button type="button" data-view="patterns" class="view-btn">15 Patterns &amp; Code Kit</button>
+          <button type="button" data-view="arbsre" class="view-btn">ARB, RFP &amp; SRE Runbooks</button>
+          <button type="button" data-view="scenarios" class="view-btn">Scenario &amp; Industry</button>
+          <button type="button" data-view="blueprints" class="view-btn">Blueprints (5)</button>
+          <button type="button" data-view="compare" class="view-btn">Compare (<span id="compareCount">0</span>/3)</button>
         </div>
         <button type="button" id="resetFiltersBtn" class="link-btn">Reset all filters</button>
       </div>
@@ -297,6 +300,12 @@
     <section id="conceptsView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
 
     <section id="playbooksView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
+
+    <section id="wizardView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
+
+    <section id="patternsView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
+
+    <section id="arbsreView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
 
     <section id="scenariosView" class="hidden" style="display:flex;flex-direction:column;gap:1rem;"></section>
 
@@ -1569,6 +1578,460 @@
       `;
     }
 
+    const wizardView = document.getElementById("wizardView");
+    const patternsView = document.getElementById("patternsView");
+    const arbsreView = document.getElementById("arbsreView");
+
+    function renderWizardView() {
+      wizardView.innerHTML = `
+        <article class="panel">
+          <span class="badge">Interactive Tool 1 • 19-Layer Stack Recommender Wizard</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">Custom Enterprise Architecture Generator</h2>
+          <p class="sub" style="margin-bottom:0.85rem;">Select your primary cloud, engineering language, dominant workload, and latency/residency constraint to auto-generate a tailored 19-layer reference stack.</p>
+          <div class="controls-grid">
+            <div>
+              <label for="wizCloud">1. Primary Cloud / Platform</label>
+              <select id="wizCloud" class="wiz-input">
+                <option value="agnostic">Cloud-Agnostic / Multi-Cloud K8s</option>
+                <option value="aws">AWS Standardized (Bedrock / IAM)</option>
+                <option value="azure">Microsoft Azure (Foundry / Entra / M365)</option>
+                <option value="gcp">Google Cloud (Vertex / BigQuery)</option>
+                <option value="lakehouse">Databricks / Snowflake Lakehouse</option>
+              </select>
+            </div>
+            <div>
+              <label for="wizLang">2. Primary Backend Language</label>
+              <select id="wizLang" class="wiz-input">
+                <option value="python">Python (FastAPI / Asyncio)</option>
+                <option value="ts">TypeScript / Node.js / Next.js</option>
+                <option value="dotnet">C# / .NET Enterprise</option>
+                <option value="java">Java (Spring) or Go</option>
+              </select>
+            </div>
+            <div>
+              <label for="wizScale">3. Corpus &amp; Vector Scale</label>
+              <select id="wizScale" class="wiz-input">
+                <option value="small">&lt; 15M Vectors (Relational + Metadata Joins)</option>
+                <option value="medium">15M – 200M Vectors (High-QPS Multi-Tenant RBAC)</option>
+                <option value="massive">200M – 5B+ Vectors or Codebase Lake (Cost-First)</option>
+                <option value="graph">Multi-Hop Topology / CMDB / BoM Lineage</option>
+              </select>
+            </div>
+            <div>
+              <label for="wizConstraint">4. Primary Operational Constraint</label>
+              <select id="wizConstraint" class="wiz-input">
+                <option value="standard">Standard Enterprise (1–3s Streaming SLA)</option>
+                <option value="sub300">Strict Sub-300ms Real-Time / Voice / Inline</option>
+                <option value="airgap">Air-Gapped / Zero-Egress On-Prem VPC</option>
+                <option value="longrun">Multi-Hour Async Sagas &amp; Human Approvals</option>
+              </select>
+            </div>
+          </div>
+          <div id="wizOutput" class="box-inner" style="margin-top:0.5rem;"></div>
+        </article>
+
+        <article class="panel">
+          <span class="badge">Interactive Tool 2 • Live FinOps TCO, GPU VRAM &amp; Vector RAM Calculator</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">Token Economics, Self-Hosted GPU Sizing &amp; Vector Memory Estimator</h2>
+          <p class="sub" style="margin-bottom:0.85rem;">Adjust workload parameters below to calculate monthly API spend (with Prefix Caching), self-hosted GPU VRAM requirements (Weights + KV Cache), and Vector DB RAM across quantization tiers.</p>
+          <div class="controls-grid">
+            <div>
+              <label for="calcReqs">Daily Agent / RAG Tasks</label>
+              <input id="calcReqs" type="number" class="calc-input" value="25000" min="100" step="1000" />
+            </div>
+            <div>
+              <label for="calcInTok">Avg Input Tokens / Task (incl. RAG/Tools)</label>
+              <input id="calcInTok" type="number" class="calc-input" value="6000" min="100" step="500" />
+            </div>
+            <div>
+              <label for="calcOutTok">Avg Output Tokens / Task</label>
+              <input id="calcOutTok" type="number" class="calc-input" value="600" min="50" step="100" />
+            </div>
+            <div>
+              <label for="calcCache">Prompt Prefix Cache Hit Rate (%)</label>
+              <input id="calcCache" type="number" class="calc-input" value="75" min="0" max="95" step="5" />
+            </div>
+            <div>
+              <label for="calcModel">Self-Hosted GPU Sizing Target</label>
+              <select id="calcModel" class="calc-input">
+                <option value="8b-fp8">8B Dense (Llama-3.1-8B / Qwen3-8B) • FP8</option>
+                <option value="32b-awq">32B Dense (Qwen3-32B) • AWQ INT4</option>
+                <option value="32b-fp8">32B Dense (Qwen3-32B) • FP8</option>
+                <option value="70b-awq">70B Dense (Llama-3.3-70B) • AWQ INT4</option>
+                <option value="70b-fp8" selected>70B Dense (Llama-3.3-70B) • FP8</option>
+                <option value="235b-moe">235B MoE (Qwen3-235B-A22B) • FP8</option>
+                <option value="671b-moe">671B MoE (DeepSeek-V3/R1 MLA) • FP8</option>
+              </select>
+            </div>
+            <div>
+              <label for="calcVecMillions">Vector DB Corpus Size (Millions of Chunks)</label>
+              <input id="calcVecMillions" type="number" class="calc-input" value="20" min="1" step="5" />
+            </div>
+          </div>
+          <div id="calcOutput" class="blueprints-grid" style="margin-top:0.5rem;"></div>
+        </article>
+      `;
+      updateWizardOutput();
+      updateCalcOutput();
+    }
+
+    function updateWizardOutput() {
+      const cloudEl = document.getElementById("wizCloud");
+      if (!cloudEl) return;
+      const cloud = cloudEl.value;
+      const lang = document.getElementById("wizLang").value;
+      const scale = document.getElementById("wizScale").value;
+      const cons = document.getElementById("wizConstraint").value;
+
+      const gwMap = {
+        agnostic: "LiteLLM Proxy (K8s) → Frontier APIs + Self-Hosted vLLM / SGLang",
+        aws: "Amazon Bedrock (PTU + Cross-Region PAYG Spillover) + LiteLLM / Portkey",
+        azure: "Azure AI Foundry + Azure APIM AI Gateway (P0/P1/P2 Token Priority Queue)",
+        gcp: "Vertex AI Gemini (Pro/Flash/Live) + Model Garden via LiteLLM / Apigee",
+        lakehouse: "Databricks Mosaic AI Gateway / Snowflake Cortex LLM Functions"
+      };
+      const orchMap = {
+        python: cloud === "aws" ? "AWS Strands Agents SDK (or LangGraph / PydanticAI) on Bedrock AgentCore" : "LangGraph (stateful HITL) or PydanticAI (type-safe FastAPI microservices)",
+        ts: "Mastra or LangGraph.js + Vercel AI SDK + CopilotKit (AG-UI)",
+        dotnet: "Microsoft Agent Framework 1.0 (MAF C#/.NET) on Azure AI Foundry Agent Service",
+        java: "Google Agent Development Kit (ADK Java/Go) on Vertex AI Agent Engine or K8s"
+      };
+      const vecMap = {
+        small: "PostgreSQL (pgvector + pgvectorscale StreamingDiskANN + ParadeDB BM25)",
+        medium: "Qdrant (Rust Payload-Aware HNSW + Sparse SPLADE/BM25 + SQ8 Quantization)",
+        massive: "LanceDB or Turbopuffer (S3/GCS Object-Storage Columnar) or Milvus DiskANN",
+        graph: "Neo4j / FalkorDB / Amazon Neptune (GraphRAG Lineage) + Hybrid Vector Index"
+      };
+      const consMap = {
+        standard: "Two-Stage Hybrid RAG (Docling + Parent-Child Chunks + RRF + Cohere/BGE Reranker) + OPA/Cedar OBO Policy",
+        sub300: "Speculative asyncio.gather at t=0 (GLiNER 8ms PII + ModernBERT 5ms Router + Retrieval) + FlashRank (10ms ONNX) + SGLang Prompt-Lookup Decoding",
+        airgap: "Immutable Offline Artifact Images (tiktoken/Docling/Presidio weights pre-baked) + vLLM (AWQ/FP8 + --enable-lora) + Qdrant + BGE-M3 + Langfuse K8s",
+        longrun: "Temporal or DBOS Durable Workflows wrapping Agent Activities + Deterministic Idempotency Keys + Compensating Saga Rollback Activities"
+      };
+
+      document.getElementById("wizOutput").innerHTML = `
+        <div class="ok-txt" style="margin-bottom:0.4rem;">Recommended Custom 19-Layer Architecture Stack</div>
+        <div class="bp-row"><strong>1. Protocols &amp; UX</strong><span>MCP (Tools w/ ≤4KB pagination) + A2A (Hop Budget ≤ 4) + AG-UI (SSE) + OpenTelemetry GenAI</span></div>
+        <div class="bp-row"><strong>2. Gateway &amp; Models</strong><span>${escapeHtml(gwMap[cloud])}</span></div>
+        <div class="bp-row"><strong>3. Orchestration &amp; Runtime</strong><span>${escapeHtml(orchMap[lang])}</span></div>
+        <div class="bp-row"><strong>4. Vector, RAG &amp; Data</strong><span>${escapeHtml(vecMap[scale])} + Cube / dbt / Genie Semantic Layer + sqlglot AST Gate</span></div>
+        <div class="bp-row"><strong>5. Constraint Optimization</strong><span>${escapeHtml(consMap[cons])}</span></div>
+        <div class="bp-row"><strong>6. Safety, Evals &amp; LLMOps</strong><span>OAuth 2.1 OBO + OPA/Cedar Policy + OTEL PII Scrubbing → Langfuse / Phoenix + Promptfoo / DeepEval (pass^3 CI Gate)</span></div>
+      `;
+    }
+
+    function updateCalcOutput() {
+      const reqsEl = document.getElementById("calcReqs");
+      if (!reqsEl) return;
+      const reqs = Math.max(1, Number(reqsEl.value) || 25000);
+      const inTok = Math.max(1, Number(document.getElementById("calcInTok").value) || 6000);
+      const outTok = Math.max(1, Number(document.getElementById("calcOutTok").value) || 600);
+      const cachePct = Math.min(95, Math.max(0, Number(document.getElementById("calcCache").value) || 75)) / 100;
+      const modelKey = document.getElementById("calcModel").value;
+      const vecM = Math.max(0.1, Number(document.getElementById("calcVecMillions").value) || 20);
+
+      const monthlyTasks = reqs * 30;
+      const monthlyInM = (monthlyTasks * inTok) / 1e6;
+      const monthlyOutM = (monthlyTasks * outTok) / 1e6;
+
+      // Frontier API reference ($3/1M input, $0.30/1M cached input, $15/1M output) vs Workhorse ($0.40/1M in, $1.60/1M out)
+      const uncachedFrontier = (monthlyInM * 3.0) + (monthlyOutM * 15.0);
+      const cachedFrontier = (monthlyInM * (1 - cachePct) * 3.0) + (monthlyInM * cachePct * 0.30) + (monthlyOutM * 15.0);
+      const cascadeBlended = cachedFrontier * 0.35 + ((monthlyInM * 0.40 + monthlyOutM * 1.60) * 0.65);
+
+      const gpuSpecs = {
+        "8b-fp8": { weights: 9.0, kv32k: 2.1, hw: "1x NVIDIA L40S (48GB) or 1x A10G (24GB)" },
+        "32b-awq": { weights: 18.5, kv32k: 4.2, hw: "1x NVIDIA L40S (48GB) or 1x A100/H100 (80GB)" },
+        "32b-fp8": { weights: 35.0, kv32k: 4.2, hw: "1x NVIDIA H100 (80GB) or 2x L40S (48GB TP=2)" },
+        "70b-awq": { weights: 39.5, kv32k: 5.2, hw: "2x NVIDIA L40S (48GB TP=2) or 1x H100 (80GB)" },
+        "70b-fp8": { weights: 74.0, kv32k: 5.2, hw: "2x NVIDIA H100 (80GB TP=2)" },
+        "235b-moe": { weights: 248.0, kv32k: 3.8, hw: "4x NVIDIA H100 (80GB TP=4) or 2x H200 (141GB)" },
+        "671b-moe": { weights: 695.0, kv32k: 1.1, hw: "8x NVIDIA H200 (141GB) or 4x B200 (192GB)" }
+      };
+      const g = gpuSpecs[modelKey] || gpuSpecs["70b-fp8"];
+      const totalVram16Batch = (g.weights + (g.kv32k * 4)).toFixed(1);
+
+      // Vector RAM for vecM million 1536-dim vectors (including 1.7x HNSW overhead for RAM index)
+      const fp32Ram = (vecM * 6.14 * 1.7).toFixed(1);
+      const sq8Ram = (vecM * 1.54 * 1.7).toFixed(1);
+      const bqRam = (vecM * 0.192 * 1.7).toFixed(1);
+      const mrl512Sq8Ram = (vecM * 0.512 * 1.7).toFixed(1);
+
+      document.getElementById("calcOutput").innerHTML = `
+        <div class="box-inner">
+          <div class="ok-txt" style="margin-bottom:0.35rem;">1. Monthly API Token Economics (${monthlyTasks.toLocaleString()} tasks/mo)</div>
+          <div class="bp-row"><strong>Uncached Frontier</strong><span>$${Math.round(uncachedFrontier).toLocaleString()} / mo</span></div>
+          <div class="bp-row"><strong>With ${Math.round(cachePct * 100)}% Prefix Cache</strong><span><strong>$${Math.round(cachedFrontier).toLocaleString()} / mo</strong> (Saves $${Math.round(uncachedFrontier - cachedFrontier).toLocaleString()}/mo!)</span></div>
+          <div class="bp-row"><strong>+ SLM Cascade Routing</strong><span><strong>$${Math.round(cascadeBlended).toLocaleString()} / mo</strong> (65% routed to Flash/Haiku/SLM)</span></div>
+          <div class="bp-row"><strong>Break-Even Verdict</strong><span>${cachedFrontier > 6500 ? "High sustained volume: Evaluate PTU commitment or Self-Hosted vLLM/SGLang." : "Stay on Serverless PAYG + Prefix Caching (below dedicated GPU cluster break-even)."}</span></div>
+        </div>
+        <div class="box-inner">
+          <div class="warn-txt" style="margin-bottom:0.35rem;">2. Self-Hosted vLLM / SGLang GPU VRAM Sizing</div>
+          <div class="bp-row"><strong>Model Weights VRAM</strong><span>${g.weights} GB (incl. CUDA activation buffer)</span></div>
+          <div class="bp-row"><strong>KV Cache (128k Tok Pool)</strong><span>~${(g.kv32k * 4).toFixed(1)} GB (using <code>--kv-cache-dtype fp8</code>)</span></div>
+          <div class="bp-row"><strong>Total VRAM Required</strong><span><strong>${totalVram16Batch} GB VRAM</strong></span></div>
+          <div class="bp-row"><strong>Recommended Nodes</strong><span><strong>${escapeHtml(g.hw)}</strong></span></div>
+        </div>
+        <div class="box-inner">
+          <div class="ok-txt" style="margin-bottom:0.35rem;">3. Vector DB HNSW RAM Sizing (${vecM}M × 1536d Vectors)</div>
+          <div class="bp-row"><strong>Uncompressed FP32 HNSW</strong><span>${fp32Ram} GB RAM</span></div>
+          <div class="bp-row"><strong>Scalar Quantized (SQ8)</strong><span><strong>${sq8Ram} GB RAM</strong> (4x savings, ~99% recall)</span></div>
+          <div class="bp-row"><strong>Matryoshka 512d + SQ8</strong><span><strong>${mrl512Sq8Ram} GB RAM</strong> (12x savings!)</span></div>
+          <div class="bp-row"><strong>Binary Quantized (1-bit)</strong><span><strong>${bqRam} GB RAM</strong> (32x savings; pair w/ 4x oversample rescore)</span></div>
+        </div>
+      `;
+    }
+
+    const DESIGN_PATTERNS = [
+      ["1. Prompt Chaining (Sequential DAG)", "Step 1 (Extract) → Deterministic Code Gate → Step 2 (Transform) → Step 3 (Format)", "2x–3x Latency | 2x Cost", "Upstream extraction error cascades → Insert Pydantic/regex assertions between steps.", "Structured document ETL, multi-stage report synthesis."],
+      ["2. Semantic / Classifier Routing", "Input → Fast Router (ModernBERT 5ms or SLM) → Specialized Handler A / B / C", "1.02x Latency | 0.3x Cost", "Edge-case misrouting → Fall back to generalist frontier model if router confidence < 0.75.", "Customer intent triage, cutting frontier token spend by 65%."],
+      ["3. Parallel Sectioning (Map-Reduce)", "asyncio.gather(Security_Worker, Perf_Worker, Compliance_Worker) → Aggregator", "1.1x Latency (max T_i) | 3.5x Cost", "Aggregator drops minority critical alerts → Emit typed JSON severity scores merged in code.", "Automated PR review, multi-clause contract auditing."],
+      ["4. Orchestrator-Workers (Agents-as-Tools)", "Central Planner dynamically delegates isolated tasks to stateless Worker Subagents", "2x–5x Latency | 3x–8x Cost", "Workers return 50KB raw logs → Enforce strict <500-token synthesis return contracts.", "Deep multi-file refactoring, heterogeneous M&A due diligence."],
+      ["5. Evaluator-Optimizer (Reflexion)", "Generator → Deterministic Verifier (pytest / sqlglot / OPA) + Critic → Refine (max 3x)", "1.5x–3x Latency | 2x–4x Cost", "Infinite self-critique loops → Cap max_iterations=3 and require a deterministic verifier.", "Self-healing Text-to-SQL, unit-tested code migration."],
+      ["6. Plan-and-Execute (Planner/Executor Split)", "Frontier Reasoning Model builds DAG plan once → Fast SLM executes steps → Replan hook", "1.8x Latency | 0.5x Cost vs ReAct", "Static plan invalidated by Step 2 tool output → Trigger Replanner hook on state delta.", "8+ step enterprise workflows where frontier ReAct is too costly."],
+      ["7. Decentralized Handoff / Swarm", "Triage Agent transfers active stream directly to Specialist Agent via Handoff()", "1.2x Latency | 1.2x Cost", "Ping-pong transfer loop (A→B→A) → Enforce max_handoffs=2 per turn.", "Contact-center voice and chat routing across departments."],
+      ["8. Human-in-the-Loop Durable Saga", "Agent → OPA Policy Gate → Interrupt(Save State) → Human MFA Approve → Resume or Rollback", "Async (Mins–Days) | 1.1x Cost", "Duplicate tool execution on retry → Use Temporal/DBOS + deterministic idempotency_key.", "Refunds > $250, production infra changes, clinical sign-off."],
+      ["9. Dual-LLM Security Quarantine", "Privileged Planner (has MCP tools) ↔ Quarantined Reader (no tools, parses untrusted email/PDF)", "1.5x Latency | 1.5x Cost", "Indirect prompt injection inside resumes/emails → Quarantined LLM can only emit typed enums.", "Processing untrusted external emails, web pages, and attachments."],
+      ["10. Speculative Parallel Execution", "Fire Guardrail + Intent Router + Hybrid Retrieval simultaneously at t=0 via TaskGroup", "0.6x Latency (-250ms) | 1.05x Cost", "Wasted retrieval on 1% blocked inputs → Cancel child tasks immediately on guardrail trip.", "Sub-300ms voice agents, autocomplete, and real-time search."],
+      ["11. Parent-Child + Contextual Hybrid RAG", "Contextual Prefix + 256-tok Child Vector + BM25 → RRF → Cross-Encoder Rerank → 1,500-tok Parent", "1.15x (+80ms) | 1.2x Cost", "Duplicate parent sections fetched → Deduplicate by parent_doc_id before LLM prompt.", "Default Enterprise RAG for SOPs, policies, and technical manuals."],
+      ["12. Corrective / Self-RAG (CRAG)", "Retrieve → Fast SLM Relevance Grader → If Low: Rewrite Query & Fallback to Web/API", "1.8x Latency | 2x Cost", "Overly strict grader triggers unnecessary retries → Calibrate grader on Golden Dataset.", "Research assistants spanning incomplete internal KBs + live APIs."],
+      ["13. GraphRAG / LightRAG Lineage", "Extract Entity-Relationship Graph + Vector Index → Dual Local/Global Community Retrieval", "1.5x Latency | 3x Ingestion Cost", "Full GraphRAG is expensive on deletes → Prefer LightRAG or structured CMDB/Neo4j graphs.", "IT CMDB root-cause analysis, supply-chain BoM lineage, fraud rings."],
+      ["14. Self-Healing Semantic Text-to-SQL", "Vector Schema Linker (Top-5 Tables + 3 Golden SQLs) → Cube/dbt/Genie → sqlglot AST Gate", "1.4x Latency | 1.5x Cost", "Valid SQL calculating wrong business metric → Bind strictly to governed Semantic Layer metrics.", "Executive BI copilots and natural-language data warehouse queries."],
+      ["15. Code-as-Action (CodeAgent)", "LLM writes 15-line Python script chaining 6 tools + loops → Runs in E2B Firecracker MicroVM", "0.35x Latency | 0.4x Cost", "RCE risk if unsandboxed → Mandatory ephemeral E2B/Daytona microVM with zero internal egress.", "Data science charts, CSV/Excel analysis, multi-API orchestration."]
+    ];
+
+    const CODE_TEMPLATES = [
+      {
+        title: "1. AGENTS.md — Repository Standard for Coding Agents",
+        lang: "Markdown",
+        code: `# AGENTS.md — Repository Architecture & Agent Operating Laws
+## 1. Build, Lint & Verification Commands
+- Install: uv sync --locked
+- Lint & Types: uv run ruff check . && uv run pyright
+- Tier-0 Fast Unit Gate (<15s): uv run pytest tests/unit -q
+- Tier-1 AI Eval Gate: npx promptfoo@latest eval -c promptfoo.yaml
+
+## 2. Non-Negotiable Architectural Rules
+1. Route all LLM calls through src/ai/gateway.py (LiteLLM + OpenTelemetry GenAI spans).
+2. Place reasoning_steps: list[str] BEFORE decision/enum fields in every Pydantic schema.
+3. Paginate all MCP tools to <= 4KB and require idempotency_key on state mutations.
+4. Keep system prompt prefixes 100% static (append timestamps & RAG chunks at the tail).`
+      },
+      {
+        title: "2. Production FastMCP Tool (OAuth 2.1 OBO + Policy + Semantic Errors)",
+        lang: "Python",
+        code: `from pydantic import BaseModel, Field
+from mcp.server.fastmcp import FastMCP, Context
+
+mcp = FastMCP("enterprise-orders-mcp")
+
+class RefundInput(BaseModel):
+    order_id: str = Field(..., pattern=r"^ORD-[0-9]{6,10}$")
+    amount_usd: float = Field(..., gt=0, le=5000)
+    idempotency_key: str = Field(..., min_length=12)
+
+@mcp.tool(description="Issue order refund. Amounts > $250 require HITL approval.")
+async def issue_order_refund(payload: RefundInput, ctx: Context) -> dict:
+    claims = ctx.request_context.meta.get("obo_user_claims", {})
+    if payload.amount_usd > 250.0 and not claims.get("mfa_hitl_approved"):
+        return {
+            "status": "REQUIRE_HITL_APPROVAL",
+            "llm_instruction": "Exceeds $250 autonomous limit. Do NOT retry; request human MFA approval."
+        }
+    return {"status": "SUCCESS", "order_id": payload.order_id, "idempotency_key": payload.idempotency_key}`
+      },
+      {
+        title: "3. LiteLLM Gateway config.yaml (PTU + Cross-Region Spillover)",
+        lang: "YAML",
+        code: `model_list:
+  - model_name: enterprise-claude-sonnet
+    litellm_params:
+      model: bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+      aws_region_name: us-east-1
+      rpm: 2000
+      tpm: 4000000
+    model_info: { id: "sonnet-ptu-primary", priority: 0 }
+  - model_name: enterprise-claude-sonnet
+    litellm_params:
+      model: bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+      aws_region_name: us-west-2
+    model_info: { id: "sonnet-payg-secondary", priority: 1 }
+router_settings:
+  num_retries: 2
+  timeout: 45
+litellm_settings:
+  callbacks: ["otel"]
+  cache: true`
+      },
+      {
+        title: "4. Open Policy Agent (OPA Rego) Deterministic Tool Gate",
+        lang: "Rego",
+        code: `package enterprise.ai.mcp_authz
+default allow := false
+default require_hitl := false
+
+allow if {
+    input.tool.name == "issue_order_refund"
+    input.user.tenant_id == input.tool.args.tenant_id
+    input.tool.args.amount_usd <= 250
+    "support_agent" in input.user.roles
+}
+require_hitl if {
+    input.tool.name == "issue_order_refund"
+    input.tool.args.amount_usd > 250
+    not input.user.mfa_hitl_approved
+}`
+      }
+    ];
+
+    function renderPatternsView() {
+      patternsView.innerHTML = `
+        <article class="panel">
+          <span class="badge">15 Canonical Design Patterns</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">Agentic &amp; RAG Design Patterns Catalog (Latency, Cost &amp; Failure Modes)</h2>
+          <p class="sub" style="margin-bottom:0.8rem;">Always pick the simplest pattern that satisfies the business SLA. Every extra agent loop multiplies latency and token cost.</p>
+          <div tabindex="0" role="region" aria-labelledby="patterns-cap" class="table-wrapper">
+            <table class="matrix-table" style="--label-2:'Topology / Flow';--label-3:'Latency & Cost';--label-4:'Failure Mode & Fix';--label-5:'Best Fit';">
+              <caption id="patterns-cap" class="sr-only">15 Canonical Agentic and RAG Design Patterns</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Pattern Name</th>
+                  <th scope="col">Topology &amp; Execution Flow</th>
+                  <th scope="col">Latency &amp; Cost Multiplier</th>
+                  <th scope="col">Primary Failure Mode &amp; Mitigation</th>
+                  <th scope="col">Best-Fit Enterprise Scenario</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${DESIGN_PATTERNS.map(([name, flow, mult, fail, fit]) => `
+                  <tr>
+                    <th scope="row">${escapeHtml(name)}</th>
+                    <td>${escapeHtml(flow)}</td>
+                    <td><span class="badge">${escapeHtml(mult)}</span></td>
+                    <td>${escapeHtml(fail)}</td>
+                    <td><strong>${escapeHtml(fit)}</strong></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <span class="badge">Copy-Paste Production Starter Kit</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">Production Code &amp; Configuration Templates</h2>
+          <p class="sub" style="margin-bottom:0.8rem;">Reference templates for AGENTS.md, FastMCP with OAuth 2.1 OBO, LiteLLM PTU/PAYG Gateway, and OPA Rego Tool Authorization.</p>
+          <div class="blueprints-grid">
+            ${CODE_TEMPLATES.map((tpl, i) => `
+              <div class="box-inner" style="display:flex;flex-direction:column;justify-content:space-between;gap:0.5rem;">
+                <div>
+                  <div class="header-top" style="margin-bottom:0.35rem;">
+                    <strong>${escapeHtml(tpl.title)}</strong>
+                    <button type="button" data-copy-code="${i}" class="pill">Copy Code</button>
+                  </div>
+                  <pre class="formula-box" style="margin:0;white-space:pre-wrap;">${escapeHtml(tpl.code)}</pre>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      `;
+    }
+
+    const ARB_CHECKS = [
+      ["Identity & OBO", "Zero shared god-mode API keys; all MCP/DB calls use OAuth 2.1 On-Behalf-Of (OBO) user-scoped tokens."],
+      ["Identity & OBO", "High-blast-radius mutations (e.g., refund > $250) gated by deterministic OPA / AWS Cedar policy + MFA interrupt."],
+      ["Identity & OBO", "All state-mutating tools enforce deterministic idempotency_key deduplication on retry."],
+      ["RAG & Data ACLs", "Vector search enforces pre-filter ACLs (allowed_groups / SpiceDB) BEFORE ANN top-k scoring."],
+      ["RAG & Data ACLs", "Source deletion & permission revocation webhooks (Kafka/CDC) purge vectors within < 5-minute SLA."],
+      ["RAG & Data ACLs", "Two-stage Hybrid Search (Dense + BM25 + RRF + Cross-Encoder Reranker) verified on Golden Dataset."],
+      ["Privacy & Sandbox", "Zero Data Retention (ZDR) + Abuse Monitoring Opt-Out executed on all external model endpoints."],
+      ["Privacy & Sandbox", "OpenTelemetry Collector PII Redaction Processor scrubs SSNs/PHI/cards inside VPC before trace export."],
+      ["Privacy & Sandbox", "Untrusted code/browser execution isolated inside pre-baked Firecracker microVMs (E2B / AgentCore)."],
+      ["FinOps & Resilience", "All model calls routed via AI Gateway (LiteLLM / Portkey) with P0/P1/P2 priority queues & tenant budgets."],
+      ["FinOps & Resilience", "System prompts obey Prefix Immutability (>70% KV prefix cache hit rate verified in telemetry)."],
+      ["FinOps & Resilience", "Failover routes across regions/clouds of the EXACT SAME model family first before crossing model families."],
+      ["FinOps & Resilience", "Hard max_iterations <= 10 and A2A x-agent-hop-budget <= 4 enforced to block runaway token loops."],
+      ["Evals & Rollout", "Two-Tier CI Gate active: Tier-0 deterministic pytest (<30s) + Tier-1 pass^3 Golden Dataset + Promptfoo red-team."],
+      ["Evals & Rollout", "Rollout starts in Stage 1 (Shadow) or Stage 2 (Copilot Draft) with an instant circuit-breaker kill switch."]
+    ];
+
+    const SRE_RUNBOOKS = [
+      ["Runbook 1: Sudden Hallucination / Accuracy Drop", "Online Judge Faithfulness < 0.75; user thumbs-down rate spikes 3x.", "1. Check if upstream PDF layout parser broke or if AI Gateway failed over across different model families. 2. Roll back prompt version in Langfuse Registry (0-downtime).", "Pin exact model snapshot IDs; enforce Same-Model-Family failover; promote failed traces to CI Golden Dataset."],
+      ["Runbook 2: Runaway Agent Loop / Token Bill Spike ('Model DoS')", "P99 trace token count jumps from 4k to 180k+; tenant daily budget exhausted in 20 mins.", "1. Throttle offending virtual key in LiteLLM/Portkey. 2. Inspect Langfuse trace: usually an MCP tool returning raw 500 stack traces that the agent retries 25x.", "Enforce max_iterations=8, A2A x-agent-hop-budget <= 4, and return LLM-readable stop instructions on tool errors."],
+      ["Runbook 3: Indirect Prompt Injection / Tool Hijack", "Lakera / Prompt Shields alert spikes; agent attempts unauthorized tool call after reading external email/PDF.", "1. Flip OPA/Cedar policy kill-switch to require mandatory human MFA approval on all mutating MCP tools. 2. Quarantine offending doc_id in Vector DB.", "Deploy Dual-LLM Security Quarantine (untrusted reader LLM has zero tools; planner LLM only receives typed enums)."],
+      ["Runbook 4: Regional Cloud 429 Rate-Limit Storm", "TTFT > 15s; HTTP 429 errors exceed 20% on primary region during 10 AM peak.", "1. Verify AI Gateway P0/P1/P2 queue is shedding background batch/eval jobs. 2. Spill traffic to secondary region and cap request max_tokens to P95 output length.", "Commit baseline Provisioned Throughput (PTU) for P0 interactive users + multi-region PAYG burst spillover."],
+      ["Runbook 5: Filtered Vector Search Recall Collapse", "Smaller tenant queries return 0 results despite documents existing in index.", "1. Standard HNSW graph disconnects when metadata filter matches < 0.5% of vectors. 2. Enable hnsw.iterative_scan = relaxed_order (pgvector 0.8+) or raise ef_search.", "Use Payload-Aware HNSW (Qdrant) or partition tenants into dedicated collection namespaces."]
+    ];
+
+    function renderArbSreView() {
+      arbsreView.innerHTML = `
+        <article class="panel">
+          <div class="header-top" style="margin-bottom:0.65rem;">
+            <div>
+              <span class="badge">Interactive ARB Gatekeeper</span>
+              <h2 style="margin:0.35rem 0 0.15rem;font-size:1.15rem;">15-Point Architecture Review Board (ARB) Production Go-Live Checklist</h2>
+              <p class="sub">Check off each verified control below during architecture sign-off to compute your Production Readiness Score.</p>
+            </div>
+            <div class="stat-box" style="min-width:150px;">
+              <div id="arbScoreNum" class="stat-num" style="color:var(--brand);">0 / 15 (0%)</div>
+              <div id="arbScoreLbl" class="stat-lbl">ARB Readiness</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;">
+            ${ARB_CHECKS.map(([cat, text], idx) => `
+              <label class="box-inner" style="display:flex;align-items:center;gap:0.65rem;margin:0;cursor:pointer;font-weight:400;color:var(--text);">
+                <input type="checkbox" class="arb-chk" data-arb="${idx}" style="width:1.05rem;height:1.05rem;" />
+                <span class="badge" style="min-width:130px;text-align:center;">${escapeHtml(cat)}</span>
+                <span>${escapeHtml(text)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </article>
+
+        <article class="panel">
+          <span class="badge">Day-2 AI Operations</span>
+          <h2 style="margin:0.4rem 0 0.2rem;font-size:1.15rem;">AI SRE Production Incident Runbooks (Triage &lt; 15 Mins)</h2>
+          <div tabindex="0" role="region" aria-labelledby="sre-cap" class="table-wrapper" style="margin-top:0.65rem;">
+            <table class="matrix-table" style="--label-2:'Symptoms & Alerts';--label-3:'Immediate Mitigation (<15m)';--label-4:'Permanent Architectural Fix';">
+              <caption id="sre-cap" class="sr-only">Day-2 AI SRE Incident Runbooks</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Incident Scenario</th>
+                  <th scope="col">Telemetry Symptoms &amp; Alerts</th>
+                  <th scope="col">Immediate Mitigation (&lt; 15 Mins)</th>
+                  <th scope="col">Permanent Architectural Fix</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${SRE_RUNBOOKS.map(([inc, sym, mit, fix]) => `
+                  <tr>
+                    <th scope="row">${escapeHtml(inc)}</th>
+                    <td>${escapeHtml(sym)}</td>
+                    <td>${escapeHtml(mit)}</td>
+                    <td><strong>${escapeHtml(fix)}</strong></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <span class="badge">Vendor Procurement Due Diligence</span>
+          <h2 style="margin:0.4rem 0 0.35rem;font-size:1.1rem;">6 Vendor RFP "Trap-Door" Questions to Expose Hidden Lock-In &amp; Costs</h2>
+          <div class="blueprints-grid">
+            <div class="box-inner"><strong>1. True ZDR vs. 30-Day Abuse Logs:</strong> "Does your 'No Training' clause also disable 30-day human Trust &amp; Safety review retention without a separate ZDR addendum?"</div>
+            <div class="box-inner"><strong>2. ACL Revocation Lag:</strong> "Are document permission revocations synced via <5-minute incremental webhooks, or a 24-hour nightly re-crawl window?"</div>
+            <div class="box-inner"><strong>3. Upfront max_tokens Quota Deduction:</strong> "Does your cloud endpoint deduct the full max_tokens parameter upfront from our TPM quota before generation starts?"</div>
+            <div class="box-inner"><strong>4. BYO-Gateway &amp; OpenTelemetry:</strong> "Can we route through our own LiteLLM/Bedrock gateway at 0% token markup and export raw OpenTelemetry gen_ai.* spans?"</div>
+            <div class="box-inner"><strong>5. Vector RAM Compression:</strong> "Does your Vector DB support SQ8 / Binary Quantization / DiskANN, or force uncompressed FP32 RAM nodes at 50M+ vectors?"</div>
+            <div class="box-inner"><strong>6. Git &amp; CI Testability:</strong> "Are visual workflows exported as clean code that can be diffed in Git PRs and unit-tested with mocked tools in pytest?"</div>
+          </div>
+        </article>
+      `;
+    }
+
     function setView(view) {
       document.querySelectorAll(".view-btn").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.view === view);
@@ -1577,10 +2040,13 @@
       tableView.classList.toggle("hidden", view !== "table");
       conceptsView.classList.toggle("hidden", view !== "concepts");
       playbooksView.classList.toggle("hidden", view !== "playbooks");
+      wizardView.classList.toggle("hidden", view !== "wizard");
+      patternsView.classList.toggle("hidden", view !== "patterns");
+      arbsreView.classList.toggle("hidden", view !== "arbsre");
       scenariosView.classList.toggle("hidden", view !== "scenarios");
       blueprintsView.classList.toggle("hidden", view !== "blueprints");
       compareView.classList.toggle("hidden", view !== "compare");
-      filterBar.classList.toggle("hidden", view === "concepts" || view === "playbooks" || view === "scenarios" || view === "blueprints" || view === "compare");
+      filterBar.classList.toggle("hidden", view !== "cards" && view !== "table");
     }
 
     function renderAll() {
@@ -1598,12 +2064,37 @@
       if (viewBtn) { setView(viewBtn.dataset.view); return; }
       const conceptCatBtn = e.target.closest("[data-concept-cat]");
       if (conceptCatBtn) { activeConceptCat = conceptCatBtn.dataset.conceptCat; renderConcepts(); return; }
+      const copyBtn = e.target.closest("[data-copy-code]");
+      if (copyBtn) {
+        const idx = Number(copyBtn.dataset.copyCode);
+        if (CODE_TEMPLATES[idx] && navigator.clipboard) {
+          navigator.clipboard.writeText(CODE_TEMPLATES[idx].code);
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => { copyBtn.textContent = "Copy Code"; }, 1500);
+        }
+        return;
+      }
       const layerBtn = e.target.closest("[data-layer]");
       if (layerBtn) { activeLayer = layerBtn.dataset.layer; renderAll(); return; }
       const inspectBtn = e.target.closest("[data-inspect]");
       if (inspectBtn) { openDetail(inspectBtn.dataset.inspect); return; }
       const compareBtn = e.target.closest("[data-compare]");
       if (compareBtn) { toggleCompare(compareBtn.dataset.compare); }
+    });
+
+    document.addEventListener("input", (e) => {
+      if (e.target.classList.contains("wiz-input")) { updateWizardOutput(); }
+      if (e.target.classList.contains("calc-input")) { updateCalcOutput(); }
+      if (e.target.classList.contains("arb-chk")) {
+        const total = ARB_CHECKS.length;
+        const checked = document.querySelectorAll(".arb-chk:checked").length;
+        const pct = Math.round((checked / total) * 100);
+        const scoreEl = document.getElementById("arbScoreNum");
+        if (scoreEl) {
+          scoreEl.textContent = `${checked} / ${total} (${pct}%)`;
+          scoreEl.style.color = pct === 100 ? "var(--ok)" : pct >= 70 ? "var(--brand)" : "var(--warn)";
+        }
+      }
     });
 
     searchInput.addEventListener("input", renderAll);
@@ -1629,6 +2120,9 @@
 
     renderConcepts();
     renderPlaybooks();
+    renderWizardView();
+    renderPatternsView();
+    renderArbSreView();
     renderScenarios();
     renderBlueprints();
     renderAll();

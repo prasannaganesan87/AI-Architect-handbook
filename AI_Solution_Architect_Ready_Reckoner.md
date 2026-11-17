@@ -25,8 +25,14 @@
 15. [Layer 14: Multimodal AI (Voice/Speech, Vision/Image & Video)](#15-layer-14-multimodal-ai-voicespeech-visionimage--video)
 16. [Layer 15: AI Application UX & Frontend SDKs](#16-layer-15-ai-application-ux--frontend-sdks)
 17. [Layer 16: Enterprise AI Governance, Compliance, TCO/FinOps & Resilience](#17-layer-16-enterprise-ai-governance-compliance-tcofinops--resilience)
-18. [Layer 17: Industry Sector Handbook, Legacy Integration & Constraint-Driven Architectures](#18-layer-17-industry-sector-handbook-legacy-integration--constraint-driven-architectures)
-19. [Layer 18: Architect's Scenario-to-Technology Lookup, Reference Stacks & Anti-Patterns](#19-layer-18-architects-scenario-to-technology-lookup-reference-stacks--anti-patterns)
+28. [Layer 17: Industry Sector Handbook, Legacy Integration & Constraint-Driven Architectures](#18-layer-17-industry-sector-handbook-legacy-integration--constraint-driven-architectures)
+29. [Layer 18: Architect's Scenario-to-Technology Lookup, Reference Stacks & Anti-Patterns](#19-layer-18-architects-scenario-to-technology-lookup-reference-stacks--anti-patterns)
+20. [Layer 19: Core AI & Agentic Concepts Encyclopedia (Types, Pros/Cons & Selection Matrices)](#20-layer-19-core-ai--agentic-concepts-encyclopedia-types-proscons--selection-matrices)
+21. [TCO, Token Economics, GPU VRAM & Vector RAM Sizing Reference](#21-tco-token-economics-gpu-vram--vector-ram-sizing-reference)
+22. [Canonical Agentic & RAG Design Patterns Catalog (15 Patterns)](#22-canonical-agentic--rag-design-patterns-catalog-15-patterns)
+23. [Stack Recommender Decision Matrix (Constraints → 19-Layer Stack)](#23-stack-recommender-decision-matrix-constraints--19-layer-stack)
+24. [Production Code & Configuration Starter Kit (Copy-Paste Templates)](#24-production-code--configuration-starter-kit-copy-paste-templates)
+25. [ARB Go-Live Checklist, Vendor RFP Scorecard & Day-2 AI SRE Runbooks](#25-arb-go-live-checklist-vendor-rfp-scorecard--day-2-ai-sre-runbooks)
 
 ---
 
@@ -953,3 +959,260 @@ flowchart TB
 | **DPO (Direct Preference Optimization) & ORPO / KTO** | Preference Alignment | Optimizes the policy model directly on `(prompt, chosen, rejected)` preference pairs (`DPO`/`ORPO`) or binary thumbs-up/down signals (`KTO`) using a closed-form loss—**eliminating the separate Reward Model + PPO loop**. | Stable, fast, and memory-efficient; `KTO` works directly on unpaired production thumbs-up / thumbs-down user logs! | Can overfit if preference pairs only differ in length (length bias). | Aligning tone, reducing false refusals, and learning from **human Copilot edit diffs** in production. |
 | **GRPO (Group Relative Policy Optimization / RLVR)** | Reasoning RL | Samples a group of $G$ completions per prompt, scores them with **deterministic verifiable reward functions** (unit tests pass, SQL executes, math answer matches, JSON schema valid), and normalizes advantages across the group without a critic network. | **The breakthrough behind DeepSeek-R1 & modern domain reasoning SLMs:** Teaches small 7B–32B models genuine self-verification and reasoning on code/SQL/logic with zero human labeling cost! | Requires a fast, deterministic reward verifier (code sandbox, SQL engine, rule checker) and more compute per step than SFT/DPO. | Training high-accuracy **Text-to-SQL, Code Migration, Compliance Verification, or Math/Quant SLMs**. |
 | **FP8 vs. AWQ vs. GPTQ vs. GGUF** | Inference Quantization | *FP8:* Hardware 8-bit float on H100/H200/B200/L40S.<br>*AWQ:* 4-bit Activation-Aware Weight Quantization protecting the 1% most salient weight channels.<br>*GPTQ:* 4-bit Hessian second-order error compensation.<br>*GGUF:* CPU/Apple Unified Memory $K$-quant format. | • **FP8:** Near-zero accuracy loss (`<0.2%`), $2\times$ throughput on Hopper/Blackwell/Ada GPUs.<br>• **AWQ:** Best 4-bit quality/speed balance for `vLLM`/`SGLang` when fitting 70B models on fewer GPUs. | • Naive INT4 without activation awareness (`AWQ`) degrades coding and complex instruction adherence by 3–8%. | **Cloud/Datacenter GPUs:** Choose **FP8** first; choose **AWQ (INT4)** when VRAM-constrained.<br>**Local Mac/CPU:** Choose **GGUF (`Q4_K_M` / `Q8_0`)**. |
+
+
+---
+
+## 21. TCO, Token Economics, GPU VRAM & Vector RAM Sizing Reference
+
+### 21.1 Self-Hosted GPU VRAM Sizing Math (Weights + KV Cache + Activations)
+
+When sizing GPU nodes (`NVIDIA L40S 48GB`, `A100/H100 80GB`, `H200 141GB`, `B200 192GB`) for `vLLM` or `SGLang`, total VRAM must fit three components:
+
+$$\text{Total GPU VRAM} = \underbrace{P \times B_{\text{weight}} \times 1.10}_{\text{Model Weights + CUDA Overhead}} + \underbrace{2 \times L \times H_{kv} \times d_{\text{head}} \times B_{kv} \times S_{\text{ctx}} \times C_{\text{batch}}}_{\text{KV-Cache Memory across Concurrent Requests}}$$
+
+* $P$: Total parameter count (including *all* experts in an MoE model!).
+* $B_{\text{weight}}$: Bytes per parameter (`2.0` for BF16/FP16, `1.0` for FP8/INT8, `0.55` for AWQ/GPTQ INT4 including group scales).
+* $L$: Number of transformer layers; $H_{kv}$: Number of Key/Value heads (`GQA` reduces this $4\times\text{--}8\times$ vs. `MHA`); $d_{\text{head}}$: Head dimension (typically 128).
+* $B_{kv}$: Bytes per KV cache element (`2` for FP16, `1` for `--kv-cache-dtype fp8`).
+* $S_{\text{ctx}}$: Average sequence length in tokens; $C_{\text{batch}}$: Concurrent in-flight requests.
+
+#### GPU Fleet Reference Sizing Matrix (Production `vLLM` / `SGLang`)
+
+| Model Class & Example | Precision | Model Weights VRAM | KV Cache per 32k Context (GQA, FP8 KV) | Recommended Hardware Config | Expected Throughput (Agg. TPS) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **8B Dense** (`Llama-3.1-8B` / `Qwen3-8B`) | **FP8 / BF16** | `8.5 GB` (FP8) / `16 GB` (BF16) | `~2.1 GB` per 32k tokens | **1x NVIDIA L40S (48GB)** or **1x A10G (24GB w/ FP8)** | `1,200–2,800 tok/s` |
+| **32B Dense** (`Qwen3-32B` / `Gemma-27B`) | **AWQ (INT4) / FP8** | `18 GB` (INT4) / `34 GB` (FP8) | `~4.2 GB` per 32k tokens | **1x H100 (80GB)** in FP8, or **1x L40S (48GB)** in AWQ INT4 | `600–1,400 tok/s` |
+| **70B Dense** (`Llama-3.3-70B`) | **FP8 / AWQ (INT4)** | `72 GB` (FP8) / `39 GB` (AWQ) | `~5.2 GB` per 32k tokens | **2x H100 (80GB) TP=2** (FP8) or **2x L40S (48GB) TP=2** (AWQ) | `450–1,100 tok/s` |
+| **235B MoE (22B Active)** (`Qwen3-235B-A22B`) | **FP8** | `~245 GB` (All experts in RAM) | `~3.8 GB` per 32k tokens | **4x H100 (80GB) TP=4** or **2x H200 (141GB)** | `900–2,200 tok/s` |
+| **671B MoE (37B Active)** (`DeepSeek-V3 / R1`) | **FP8 (Native)** | `~690 GB` (All experts in RAM) | `~1.1 GB` per 32k (`MLA` compression!) | **8x H100 (80GB)** (tight; prefer **8x H200 141GB** or **4x B200**) | `1,500–3,500 tok/s` |
+
+### 21.2 Managed API vs. Self-Hosted GPU Break-Even Rule of Thumb
+* **Stay on Managed Serverless APIs (`Bedrock` / `Vertex` / `Foundry` PAYG)** when traffic is spiky (business-hours only, `<15%` sustained 24/7 utilization) or total volume is under **50M–100M tokens/day**.
+* **Commit to Provisioned Throughput (`PTU`)** when steady baseline utilization exceeds **55–65% across business hours** and you need guaranteed zero-`429` SLA capacity.
+* **Self-Host Open-Weight Models (`vLLM` / `SGLang` on K8s)** when sustained 24/7 volume exceeds **150M–300M tokens/day** (~$4,000–$8,000/mo API equivalent), OR when strict air-gapped sovereignty / custom multi-LoRA fine-tuning mandates it.
+
+---
+
+## 22. Canonical Agentic & RAG Design Patterns Catalog (15 Patterns)
+
+Use this catalog to select the simplest pattern that solves the business problem while understanding its exact latency and token cost multiplier:
+
+| # | Pattern Name | Topology / Flow | Latency Multiplier | Token Cost Multiplier | Primary Failure Mode & Mitigation | Best-Fit Enterprise Use Case |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **1** | **Prompt Chaining (Sequential DAG)** | `Step 1 (Extract) → Code Gate → Step 2 (Transform) → Step 3 (Format)` | $2\times\text{--}3\times$ | $1.5\times\text{--}2.5\times$ | Upstream extraction error cascades to Step 3 $\rightarrow$ Insert deterministic Pydantic/regex assertions between steps. | Document processing pipelines, report generation, ETL translation. |
+| **2** | **Semantic / Classifier Routing** | `Input → Fast Router (ModernBERT 5ms or SLM) → Specialized Handler A/B/C` | **$1.02\times$ (Near Zero)** | **$0.2\times\text{--}0.5\times$ (Saves cost!)** | Misrouted edge-case queries $\rightarrow$ Log router confidence; fall back to generalist frontier model if confidence $<0.75$. | Customer triage, routing simple FAQs to `Flash-Lite` and complex bugs to `Claude Sonnet`. |
+| **3** | **Parallel Sectioning (Map-Reduce)** | `asyncio.gather(Worker_Sec, Worker_Perf, Worker_Style) → Aggregator` | **$1.1\times$ ($\max(T_i)$)** | $3\times\text{--}4\times$ | Aggregator drops minority critical findings $\rightarrow$ Have workers emit structured JSON severity scores merged in code first. | Automated PR code review, multi-clause contract compliance audits. |
+| **4** | **Orchestrator-Workers (`Agents-as-Tools`)** | `Central Planner → dynamically spawns isolated Worker Subagents → Synthesizes` | $2\times\text{--}5\times$ | $3\times\text{--}8\times$ | Subagents return bloated raw logs $\rightarrow$ Enforce strict `<500 token` structured return schemas per worker. | Deep multi-file codebase refactoring, multi-source M&A research. |
+| **5** | **Evaluator-Optimizer (`Reflexion`)** | `Generator → Deterministic Verifier (pytest/sqlglot/OPA) + Critic → Refine (≤3x)` | $1.5\times\text{--}3\times$ | $2\times\text{--}4\times$ | Infinite loop on unfixable requirement $\rightarrow$ Hard cap `max_iterations = 3` and escalate with best diff. | Text-to-SQL generation, unit-tested code migration, strict policy drafting. |
+| **6** | **Plan-and-Execute (Planner / Executor Split)** | `Frontier Reasoning Model (Plan DAG) → Fast Workhorse SLM (Execute Steps) → Replan` | $1.8\times\text{--}3.5\times$ | **$0.5\times$ vs. pure frontier ReAct** | Static plan invalid after Step 2 tool output $\rightarrow$ Trigger lightweight Replanner hook on unexpected tool state. | 8+ step enterprise workflows where running a frontier model on every step is too slow/expensive. |
+| **7** | **Decentralized Handoff / Swarm** | `Triage Agent → Handoff(conversation_state) → Billing Specialist Agent` | $1.2\times$ | $1.2\times$ | Ping-pong handoff loop (`A → B → A`) $\rightarrow$ Enforce `max_handoffs_per_turn = 2` and pass explicit handoff summary. | Multi-department contact-center voice and chat agents. |
+| **8** | **Human-in-the-Loop Durable Saga** | `Agent → OPA Policy Gate → Interrupt(Save State) → Human MFA Approve → Resume` | Async (Minutes to Days) | $1.1\times$ | State schema changes while thread sleeps; duplicate retries $\rightarrow$ Use `Temporal`/`DBOS`/`LangGraph` + idempotency keys. | High-blast-radius mutations: refunds `>$250`, production infra changes, clinical sign-off. |
+| **9** | **Dual-LLM Security Quarantine** | `Privileged Planner (No raw untrusted text) ↔ Quarantined Reader (No tools, processes untrusted email/PDF)` | $1.5\times$ | $1.5\times$ | Indirect prompt injection inside external emails/resumes hijacking MCP tools $\rightarrow$ Quarantined LLM can only emit typed enum/variables. | Email/resume/web-scraping agents with access to sensitive internal tools. |
+| **10** | **Speculative Parallel Execution** | `Fire Guardrail + Intent Router + Hybrid Retrieval simultaneously at t=0` | **$0.6\times$ (Saves 250ms+)** | $1.05\times$ | Wasted retrieval QPS on 1% blocked guardrail inputs $\rightarrow$ Cancel in-flight tasks via `TaskGroup` immediately on guardrail trip. | Sub-300ms voice agents, e-commerce search, and real-time copilots. |
+| **11** | **Parent-Child + Contextual Hybrid RAG** | `Contextual Prefix + 256-tok Child Vector + BM25 → RRF → Rerank → Fetch 1,500-tok Parent` | $1.15\times$ (+80ms rerank) | $1.2\times$ | Duplicate parent sections fetched by multiple children $\rightarrow$ Deduplicate by `parent_doc_id` before building prompt. | **Default Enterprise RAG Architecture** for manuals, policies, and SOPs. |
+| **12** | **Corrective / Self-RAG (`CRAG`)** | `Retrieve → SLM Relevance Grader → If Low: Rewrite Query & Fallback to Web/API` | $1.5\times\text{--}2.5\times$ | $1.8\times\text{--}3\times$ | Grader is overly strict, triggering unnecessary retries $\rightarrow$ Calibrate grader threshold on Golden Dataset. | Complex customer/analyst questions where internal KB coverage is incomplete. |
+| **13** | **GraphRAG / LightRAG Lineage** | `Extract Entities & Edges → Community Summaries + Vector Index → Dual-Level Retrieval` | $1.3\times\text{--}2\times$ | $2\times\text{--}5\times$ (at ingestion) | High ingestion token cost on full GraphRAG $\rightarrow$ Use **LightRAG** or restrict graph extraction to structured metadata/CMDB. | Root-cause topology (IT CMDB), supply-chain BoM lineage, fraud rings, corpus-wide themes. |
+| **14** | **Self-Healing Semantic Text-to-SQL** | `Vector Schema Linker (Top-5 Tables + 3 Golden SQLs) → Generate SQL → sqlglot AST Gate → Dry-Run Explain` | $1.3\times\text{--}2\times$ | $1.5\times$ | Valid SQL syntax returning wrong business metric $\rightarrow$ Bind to **Cube / dbt Semantic Layer / Genie / Cortex Analyst**. | Natural-language analytics over enterprise data warehouses. |
+| **15** | **Code-as-Action (`CodeAgent`)** | `LLM writes 15-line Python script chaining 6 tool calls + loops → Executes in E2B MicroVM` | **$0.35\times$ vs. 6 sequential turns** | **$0.4\times$** | RCE risk if run in host process $\rightarrow$ **Mandatory ephemeral Firecracker microVM (`E2B`/`Daytona`)** with zero internal network egress. | Data science analysis, CSV/Excel transformation, multi-API orchestration. |
+
+---
+
+## 23. Stack Recommender Decision Matrix (Constraints $\rightarrow$ 19-Layer Stack)
+
+Use this rapid decision table (or the interactive **Stack Recommender Wizard** in the HTML Dashboard) to generate your target architecture from 4 organizational inputs:
+
+| Primary Cloud / Platform | Primary Language | Dominant Constraint | Recommended End-to-End Stack |
+| :--- | :--- | :--- | :--- |
+| **Cloud-Agnostic / Multi-Cloud / On-Prem K8s** | **Python** or **TypeScript** | **Zero Vendor Lock-In / Air-Gapped VPC Sovereignty** | • **Gateway & Serving:** `LiteLLM` + `vLLM` / `SGLang` (`FP8`/`AWQ` + `--enable-lora`)<br>• **Orchestration & Durable:** `LangGraph` or `PydanticAI` (Python) / `Mastra` (TS) + `DBOS` or `Temporal`<br>• **Data & RAG:** `Docling` + `Qdrant` or `Postgres pgvectorscale` + `BGE-M3` + `BGE-Reranker` + `Mem0`/`Graphiti`<br>• **Safety & Ops:** `OPA` + `Presidio`/`GLiNER` + `Langfuse (K8s)` + `Promptfoo` + `E2B` |
+| **AWS Standardized** | **Python** or **TypeScript** | **Serverless Scale, IAM Governance & MicroVM Isolation** | • **Gateway & Models:** `Amazon Bedrock` (Claude + Nova via PTU + PAYG Cross-Region Spillover) + `LiteLLM`/`Portkey`<br>• **Orchestration & Runtime:** `AWS Strands Agents SDK` (or `LangGraph`) on **`Amazon Bedrock AgentCore`**<br>• **Data & RAG:** `Aurora PostgreSQL pgvector` or `OpenSearch` + `AgentCore Memory` + `Cube`/`dbt`<br>• **Safety & Ops:** `AWS Cedar` + `Bedrock Guardrails (Automated Reasoning)` + `CloudWatch GenAI / Langfuse` |
+| **Microsoft Azure Standardized** | **C# / .NET** or **Python** | **Entra ID Identity, M365 / SharePoint Grounding & Hybrid Pro/Citizen Dev** | • **Gateway & Models:** `Azure AI Foundry` + `Azure APIM AI Gateway`<br>• **Orchestration & Runtime:** **`Microsoft Agent Framework 1.0 (MAF)`** on `Foundry Agent Service` + `Copilot Studio` (`A2A`)<br>• **Data & RAG:** `Azure AI Search` (Hybrid + Semantic Ranker) + `Azure Doc Intelligence` + `Entra Agent ID (OBO)`<br>• **Safety & Ops:** `Azure AI Content Safety (Prompt Shields)` + `Foundry Observability` + `PyRIT` |
+| **Google Cloud Standardized** | **Java, Go, Python, or TS** | **Polyglot Microservices, 1M+ Multimodal Context, or Realtime Voice/Video** | • **Gateway & Models:** `Vertex AI Gemini` (Pro / Flash / Live API) + `Model Garden`<br>• **Orchestration & Runtime:** **`Google ADK`** (Java/Go/Python/TS) on **`Vertex AI Agent Engine`** + `Google Agentspace`<br>• **Data & RAG:** `AlloyDB pgvector` or `Vertex AI Search` + `BigQuery Semantic Layer`<br>• **Safety & Ops:** `Google Model Armor` + `adk eval` CLI + `Cloud Trace (OTEL)` |
+| **Databricks / Snowflake Lakehouse** | **Python / SQL** | **Zero Data Copy & Inherited Row/Column Data Governance** | • **Gateway & Models:** `Databricks Mosaic AI Gateway` / `Snowflake Cortex`<br>• **Orchestration:** `Mosaic AI Agent Framework` (wrapping `LangGraph`/`DSPy`) or `Snowflake Cortex Agents`<br>• **Data & RAG:** `AI/BI Genie` / `Cortex Analyst` (Semantic SQL) + `Unity Catalog` / `Cortex Search` (inherited RBAC)<br>• **Safety & Ops:** `MLflow 3 Tracing & Judges` / `TruLens` |
+
+
+---
+
+## 24. Production Code & Configuration Starter Kit (Copy-Paste Templates)
+
+### 24.1 Repository `AGENTS.md` Standard Template
+Place at the root of every repository so `Claude Code`, `Cursor`, `Antigravity`, `Codex`, `Copilot`, and `Devin` follow deterministic repo rules:
+
+```markdown
+# AGENTS.md — Repository Architecture & Agent Operating Laws
+
+## 1. Build, Lint & Test Commands (Run Before Concluding Any Task)
+- **Install & Sync:** `uv sync --locked` (never run bare `pip install`)
+- **Typecheck & Lint:** `uv run ruff check . && uv run pyright`
+- **Tier-0 Fast Unit & Schema Tests (<15s):** `uv run pytest tests/unit -q`
+- **Tier-1 AI Eval Regression Gate:** `npx promptfoo@latest eval -c promptfoo.yaml`
+
+## 2. Architectural Guardrails (Non-Negotiable)
+1. **No Direct LLM SDK Calls:** Never import `openai` or `anthropic` directly in domain services. Route all completions through `src/ai/gateway.py` (`LiteLLM` + OpenTelemetry GenAI spans).
+2. **Structured Outputs Rule:** Every Pydantic output schema MUST place `reasoning_steps: list[str]` BEFORE enum/classification decision fields.
+3. **MCP Tool Ergonomics:** Every MCP tool must enforce `max_items <= 25` pagination (`<= 4KB` JSON), require an `idempotency_key` on writes, and return actionable LLM-readable error instructions on 4xx/5xx failures.
+4. **Prompt Prefix Immutability:** Keep system prompts and tool schemas 100% static at the prefix; append dynamic timestamps, user metadata, and RAG chunks strictly at the end of the message list.
+```
+
+### 24.2 Production FastMCP Server Template (OAuth 2.1 OBO, Pagination & Semantic Errors)
+
+```python
+from pydantic import BaseModel, Field
+from mcp.server.fastmcp import FastMCP, Context
+
+mcp = FastMCP("enterprise-orders-mcp")
+
+class RefundInput(BaseModel):
+    order_id: str = Field(..., pattern=r"^ORD-[0-9]{6,10}$", description="Order ID formatted as ORD-123456")
+    amount_usd: float = Field(..., gt=0, le=5000, description="Refund amount in USD")
+    reason_code: str = Field(..., description="One of: DAMAGED, LATE_DELIVERY, WRONG_ITEM")
+    idempotency_key: str = Field(..., min_length=12, description="Deterministic hash(workflow_id + step_id)")
+
+@mcp.tool(description="Issue a customer order refund. Amounts > $250 require prior HITL approval token.")
+async def issue_order_refund(payload: RefundInput, ctx: Context) -> dict:
+    # 1. Extract User OBO Claims & Enforce Deterministic Policy (OPA / Cedar)
+    user_claims = ctx.request_context.meta.get("obo_user_claims", {})
+    if payload.amount_usd > 250.0 and not user_claims.get("mfa_hitl_approved"):
+        return {
+            "status": "REQUIRE_HITL_APPROVAL",
+            "llm_instruction": (
+                f"Refund of ${payload.amount_usd:.2f} exceeds the $250 autonomous limit. "
+                "Do NOT retry this tool. Pause and ask the user/manager for approval via the UI interrupt."
+            ),
+        }
+    # 2. Execute Idempotent Downstream Mutation (<= 4KB bounded response)
+    return {
+        "status": "SUCCESS",
+        "order_id": payload.order_id,
+        "refunded_usd": payload.amount_usd,
+        "idempotency_key": payload.idempotency_key,
+    }
+```
+
+### 24.3 Production `LiteLLM` Gateway `config.yaml` (PTU + PAYG Spillover & Priority Queuing)
+
+```yaml
+model_list:
+  # Primary Tier: Committed Provisioned Throughput (PTU) in Primary Region
+  - model_name: enterprise-claude-sonnet
+    litellm_params:
+      model: bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+      aws_region_name: us-east-1
+      rpm: 2000
+      tpm: 4000000
+    model_info:
+      id: "sonnet-ptu-east"
+      priority: 0
+
+  # Spillover Tier: Pay-As-You-Go (PAYG) Same-Model-Family in Secondary Region
+  - model_name: enterprise-claude-sonnet
+    litellm_params:
+      model: bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+      aws_region_name: us-west-2
+      rpm: 1000
+      tpm: 2000000
+    model_info:
+      id: "sonnet-payg-west"
+
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 2
+  timeout: 45
+  fallbacks: [{"enterprise-claude-sonnet": ["enterprise-claude-sonnet"]}]
+  enable_pre_call_checks: true
+
+litellm_settings:
+  callbacks: ["otel"]
+  cache: true
+  cache_params:
+    type: redis
+    namespace: "litellm_exact_cache_v1"
+```
+
+### 24.4 Deterministic `OPA (Rego)` Policy for Agent Tool Calls
+
+```rego
+package enterprise.ai.mcp_authz
+
+default allow := false
+default require_hitl := false
+
+# Allow read-only tools if user belongs to authorized tenant
+allow if {
+    input.tool.mode == "READ_ONLY"
+    input.user.tenant_id == input.tool.args.tenant_id
+}
+
+# Allow low-blast-radius mutations autonomously within role limits
+allow if {
+    input.tool.name == "issue_order_refund"
+    input.user.tenant_id == input.tool.args.tenant_id
+    input.tool.args.amount_usd <= 250
+    "support_agent" in input.user.roles
+}
+
+# Trigger mandatory Human-in-the-Loop (HITL) interrupt for high-value mutations
+require_hitl if {
+    input.tool.name == "issue_order_refund"
+    input.tool.args.amount_usd > 250
+    not input.user.mfa_hitl_approved
+}
+```
+
+### 24.5 `Promptfoo` CI/CD Regression & OWASP Red-Team Config (`promptfoo.yaml`)
+
+```yaml
+description: "Tier-1 CI Quality & Security Gate (Enforcing pass^3 consistency)"
+prompts:
+  - file://prompts/support_agent_system.json
+providers:
+  - id: openai:chat:enterprise-claude-sonnet
+    config:
+      apiBaseUrl: http://localhost:4000/v1
+      temperature: 0.0
+defaultTest:
+  options:
+    repeat: 3  # Enforces pass^3 consistency across trials
+  assert:
+    - type: is-json
+    - type: llm-rubric
+      value: "Response cites exact policy section IDs and never invents discount codes."
+      threshold: 0.9
+redteam:
+  purpose: "Enterprise customer order & refund agent"
+  plugins: ["indirect-prompt-injection", "bola", "rbac", "pii:direct", "sql-injection"]
+  strategies: ["jailbreak", "prompt-injection", "multi-turn"]
+```
+
+---
+
+## 25. ARB Go-Live Checklist, Vendor RFP Scorecard & Day-2 AI SRE Runbooks
+
+### 25.1 The 15-Point Architecture Review Board (ARB) Production Go-Live Checklist
+
+| Gate Category | Mandatory Production Readiness Verification (Must Be Green Before Go-Live) |
+| :--- | :--- |
+| **1. Identity & AuthZ** | ☐ Zero shared "god-mode" API keys; all MCP/DB calls use **OAuth 2.1 On-Behalf-Of (OBO)** user-scoped tokens.<br>☐ High-blast-radius mutations gated by deterministic **OPA / AWS Cedar** policy + MFA human approval interrupt.<br>☐ All state-mutating tools enforce deterministic **`idempotency_key`** deduplication. |
+| **2. Data & RAG Hygiene** | ☐ Vector queries enforce **pre-filter ACLs** (`allowed_groups` / `SpiceDB`) *before* ANN top-$k$ scoring.<br>☐ Source deletion/permission revocation webhooks (`Kafka`/`EventBridge`) purge vectors within **`<5 min` SLA**.<br>☐ Hybrid search (`Dense + BM25 + RRF`) + Cross-Encoder Reranker verified on Golden Dataset (`Recall@8 > 90%`). |
+| **3. Privacy & Security** | ☐ Zero Data Retention (**ZDR**) + Abuse Monitoring Exemption signed on all external model endpoints.<br>☐ **OTEL Collector PII Redaction Processor** scrubs SSNs/PHI/cards *before* traces leave the VPC.<br>☐ Untrusted code/browser execution isolated inside pre-baked **Firecracker microVMs (`E2B`/`AgentCore`)** with egress firewall. |
+| **4. Reliability & FinOps** | ☐ All model traffic routed via **AI Gateway (`LiteLLM`/`Portkey`)** with P0/P1/P2 token priority queues and per-tenant dollar budgets.<br>☐ System prompts obey **Prefix Immutability** (`>70%` KV prefix cache hit rate verified in metrics).<br>☐ Hard `max_steps <= 10` and `x-agent-hop-budget <= 4` enforced to prevent infinite agent loops. |
+| **5. Evals & Rollout** | ☐ Two-tier CI gate active (`Tier-0` deterministic pytest `<30s` + `Tier-1` `pass^3` Golden Dataset + `Promptfoo` red-team scan).<br>☐ Progressive rollout starts in **Stage 1 (Shadow)** or **Stage 2 (Copilot Draft)** with an instant feature-flag kill switch. |
+
+### 25.2 Vendor RFP "Trap-Door" Questions (Exposing Hidden Costs & Lock-In)
+When evaluating AI SaaS, Vector DB, or Agent Platform vendors, ask these 6 questions during technical due diligence:
+1. **"Does your 'No Training on Customer Data' clause also disable 30-day human Trust & Safety abuse review logs (true Zero-Data-Retention)?"** *(Many SaaS tiers retain prompts for 30 days unless a separate ZDR addendum is signed).*
+2. **"How are document ACL changes synchronized—live query-time check, incremental webhook delta (<5 mins), or full nightly re-crawl?"** *(Nightly re-crawls leave a 24-hour data-leak window after an employee or file permission is revoked).*
+3. **"When a cloud rate limit (`429`) occurs, do you deduct the full `max_tokens` reservation upfront from our TPM quota?"** *(Crucial for sizing PTU capacity on Bedrock/Azure).*
+4. **"Can we export our raw agent traces via standard OpenTelemetry (`gen_ai.*`), and can we bring our own LLM Gateway (`LiteLLM`/Bedrock) without per-token markup?"** *(Exposes proprietary telemetry lock-in and 30–300% token markups).*
+5. **"In your Vector DB pricing, how much RAM/disk cost increases when we enable metadata payload indexing and HNSW at 50M vectors?"** *(Tests whether they support `SQ8` / `Binary Quantization` / `DiskANN` or force expensive uncompressed RAM nodes).*
+6. **"If we use your visual agent builder, how are workflows versioned in Git, diffed in PRs, and unit-tested with mocked tools in CI?"** *(Exposes low-code tools that trap logic in un-testable proprietary databases).*
+
+### 25.3 Day-2 AI SRE Incident Runbooks (Production Triage & Remediation)
+
+| Incident Scenario | Symptoms & Telemetry Alerts | Immediate Mitigation (<15 Mins) | Permanent Architectural Fix |
+| :--- | :--- | :--- | :--- |
+| **Runbook 1: Sudden Hallucination / Accuracy Drop** | Online LLM-judge Faithfulness drops `<0.75`; user thumbs-down rate spikes $3\times$. | 1. Check if upstream document parser broke on a new PDF template or if an embedding model version changed.<br>2. Check AI Gateway logs for cross-model failover (e.g., Claude failed over to a different model family).<br>3. Roll back prompt version in `Langfuse` Prompt Registry (0-downtime). | Enforce **Same-Model-Family Regional Failover**; add failing traces to CI Golden Dataset; pin model snapshot IDs (`claude-sonnet-4-20250514`, never `:latest`). |
+| **Runbook 2: Runaway Agent Loop / Token Bill Spike ("Model DoS")** | P99 trace token count jumps from `4k` to `180k+`; single tenant burns daily budget in 20 minutes. | 1. Revoke/throttle offending virtual key or tenant in `LiteLLM`/`Portkey`.<br>2. Inspect trace tree in `Langfuse`/`Phoenix`: usually caused by an MCP tool returning an opaque `500` error that the agent retries 25 times, or an `A2A` cyclic delegation loop. | Enforce `max_iterations = 8` on agent runner, `x-agent-hop-budget <= 4` on A2A headers, and rewrite MCP tool errors to give explicit stop/clarify instructions. |
+| **Runbook 3: Indirect Prompt Injection / Tool Hijack Attempt** | `Lakera` / `Prompt Shields` alerts spike; agent attempts unexpected external egress or cross-tenant query after reading an untrusted email/PDF. | 1. Trip kill-switch shifting mutating MCP tools to **Mandatory HITL Approval (`Stage 2`)** in `OPA`/`Cedar`.<br>2. Quarantine the source document chunk in Vector DB by `doc_id`. | Implement **Dual-LLM Security Quarantine** (untrusted reader LLM has zero tools; privileged planner LLM only sees structured enum outputs) + strict OAuth OBO scoping. |
+| **Runbook 4: Regional Cloud `429` Rate-Limit Storm** | TTFT spikes `>15s`; error rate on `Bedrock`/`Azure` primary region hits `20%+` during 10 AM peak. | 1. Verify AI Gateway **P0/P1/P2 Priority Queue** is shedding P1/P2 background batch/eval jobs.<br>2. Shift overflow routing weight to secondary region (`us-west-2`) and cap `max_tokens` parameter on requests to actual P95 output length. | Purchase baseline **Provisioned Throughput (PTU)** for P0 traffic with automatic burst spillover to PAYG across multiple regions. |
+| **Runbook 5: Filtered Vector Search Recall Collapse** | Queries for smaller enterprise tenants return `0 results` or irrelevant chunks despite documents existing in DB. | 1. Inspect query plan: standard post-filtered HNSW drops recall when tenant filter matches `<0.5%` of index.<br>2. Set `hnsw.iterative_scan = relaxed_order` (`pgvector 0.8+`) or increase `ef_search`. | Use **Payload-Aware HNSW (`Qdrant`)** or partition large tenants into dedicated collection namespaces/shards. |
