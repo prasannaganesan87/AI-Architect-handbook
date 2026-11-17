@@ -1453,7 +1453,7 @@
             </div>
             <div class="arch-hop">▼ Async OpenTelemetry GenAI Spans (Scrubbed by VPC OTEL Collector PII Processor Before Export) ▼</div>
             <div class="arch-plane">
-              <div class="arch-plane-hdr"><span>6. Cross-Cutting LLMOps, Two-Tier CI Evals (`pass^k`) &amp; Governance</span><span class="badge">Boundary: OpenTelemetry GenAI + ISO 42001</span></div>
+              <div class="arch-plane-hdr"><span>6. Cross-Cutting LLMOps, Two-Tier CI Evals (<code>pass^k</code>) &amp; Governance</span><span class="badge">Boundary: OpenTelemetry GenAI + ISO 42001</span></div>
               <div class="arch-nodes">
                 <div class="arch-node"><strong>Observability &amp; Prompt Registry</strong>Langfuse (Self-Host MIT), Arize Phoenix (OTEL), LangSmith, Braintrust, MLflow 3, Datadog/Dynatrace</div>
                 <div class="arch-node"><strong>Two-Tier CI Evals &amp; Red-Teaming</strong>Tier-0 Deterministic Pytest (&lt;30s) + Tier-1 Calibrated Judges (Promptfoo, DeepEval, Ragas, PyRIT, Garak)</div>
@@ -1489,7 +1489,7 @@
 
         <article class="panel">
           <span class="badge">Architect's Math &amp; Sizing Formulas</span>
-          <h3 style="margin:0.4rem 0 0.5rem;font-size:1.08rem;">Production Unit Economics, Reliability (`pass^k`), Latency &amp; Vector RAM Math</h3>
+          <h3 style="margin:0.4rem 0 0.5rem;font-size:1.08rem;">Production Unit Economics, Reliability (<code>pass^k</code>), Latency &amp; Vector RAM Math</h3>
           <div class="blueprints-grid">
             <div class="box-inner">
               <div class="ok-txt" style="margin-bottom:0.3rem;">1. Cost Per Resolved Task (True North FinOps Metric)</div>
@@ -1519,7 +1519,7 @@
             <span class="badge">Playbook 1 • Context Engineering</span>
             <h3 style="margin:0.4rem 0 0.35rem;font-size:1.05rem;">4 Rules of Context Hygiene (Preventing Context Rot &amp; Cache Misses)</h3>
             <div class="bp-row"><strong>1. Prefix Immutability</strong><span>Keep <code>System Prompt + Tool Schemas + Few-Shot Examples</code> 100% static at the top of the prompt. Never inject dynamic timestamps or per-turn RAG chunks at the top (destroys 100% of KV Prefix Caching).</span></div>
-            <div class="bp-row"><strong>2. Pointer Offloading</strong><span>Never keep 50KB raw JSON tool outputs in message history across turns. Store payloads in S3/Redis (`artifact://run_9/tool_2`) and keep a 2-line summary in state.</span></div>
+            <div class="bp-row"><strong>2. Pointer Offloading</strong><span>Never keep 50KB raw JSON tool outputs in message history across turns. Store payloads in S3/Redis (<code>artifact://run_9/tool_2</code>) and keep a 2-line summary in state.</span></div>
             <div class="bp-row"><strong>3. Trajectory Surgery</strong><span>When a tool call fails on a transient timeout/schema typo and succeeds on retry, strip the failed attempt from history so the LLM doesn't self-condition on errors.</span></div>
             <div class="bp-row"><strong>4. Sub-Agent Isolation</strong><span>Delegate noisy multi-file searches to a stateless sub-agent with a fresh context window that burns 40k tokens and returns only a 500-token synthesis.</span></div>
           </article>
